@@ -1,0 +1,56 @@
+= ISTOCK =
+:subtitle: ISTOCK DOCUMENTATION
+:source-highlighter: rouge
+:companyname: FRANCEFOOD COMPANY
+:corpname: FRANCEFOOD COMPANY
+:orgname: FRANCEFOOD COMPANY
+:creator: SuperAdmin
+:title: Documentation of module IStock
+:subject: This document is the document of module IStock.
+:keywords: IStock
+// Date du document :
+:docdate: 2020-06-24
+:toc: manual
+:toc-placement: preamble
+
+
+== TOPIC OF DOCUMENT
+
+This is the documentation of module IStock
+
+
+*Log of versions of document*
+
+[options="header",format="csv"]
+|=== 
+Author, Date, Version
+--- SuperAdmin   ---, 2020-06-24, Version 1.0
+|===
+
+
+[NOTE]
+==============
+This document was generated using Dolibarr ERP CRM process
+==============
+
+
+:toc: manual
+:toc-placement: preamble
+
+<<<
+
+== INTRODUCTION
+
+//include::README.md[]
+__README__
+
+== DATA SPECIFICATIONS
+
+__DATA_SPECIFICATION__
+
+
+== CHANGELOG
+
+//include::ChangeLog.md[]
+__CHANGELOG__
+
