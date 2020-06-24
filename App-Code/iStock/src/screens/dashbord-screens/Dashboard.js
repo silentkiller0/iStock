@@ -16,7 +16,7 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import NavbarDashboard from '../navbar/navbar-dashboard'
+import NavbarDashboard from '../../navbar/navbar-dashboard'
 
 
 export default class Dashboard extends Component {

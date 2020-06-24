@@ -4,13 +4,14 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 
 import Welcome from '../screens/Welcome';
 import Loading from '../screens/splash/Loading';
-import Login from '../screens/login';
-import Dashboard from '../screens/Dashboard';
+import Login from '../screens/Login';
+import SignIn from '../screens/SignIn';
+import Dashboard from '../screens/dashbord-screens/Dashboard';
 
-import Commande from '../screens/Commande';
-import Preparation from '../screens/Preparation';
-import Inventory from '../screens/Inventory';
-import Settings from '../screens/Settings';
+import Commande from '../screens/dashbord-screens/Commande';
+import Preparation from '../screens/dashbord-screens/Preparation';
+import Inventory from '../screens/dashbord-screens/Inventory';
+import Settings from '../screens/dashbord-screens/Settings';
 
 import { DrawerContent } from '../screens/side-bar-custom/DrawerContent';
 
@@ -40,6 +41,7 @@ class RouterNavigation extends Component {
           welcome: Welcome,
           loading: Loading,
           login: Login,
+          signIn: SignIn,
           dashboard: DrawerNavigation
         },
         {
