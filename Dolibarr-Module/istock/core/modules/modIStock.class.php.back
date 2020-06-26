@@ -64,7 +64,7 @@ class modIStock extends DolibarrModules
         $this->editor_name = 'JDevs10';
         $this->editor_url = 'https://www.example.com';
         // Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-        $this->version = 'development';
+        $this->version = '1.0';
         // Url to the file with your last numberversion of this module
         //$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -283,12 +283,12 @@ class modIStock extends DolibarrModules
         /* END MODULEBUILDER TOPMENU */
          //BEGIN MODULEBUILDER LEFTMENU AUTHENTIFICATION
         $this->menu[$r++]=array(
-            'fk_menu'=>'fk_mainmenu=auth',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+            'fk_menu'=>'fk_mainmenu=istock',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
             'type'=>'left',                          // This is a Top menu entry
             'titre'=>'Authentification',
-            'mainmenu'=>'auth',
+            'mainmenu'=>'istock',
             'leftmenu'=>'authentification',
-            'url'=>'/istock/istockindex.php',
+            // 'url'=>'/istock/authentification_list.php',
             'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled.
@@ -297,7 +297,7 @@ class modIStock extends DolibarrModules
             'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
         );
         $this->menu[$r++]=array(
-            'fk_menu'=>'fk_mainmenu=auth,fk_leftmenu=new_auth',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+            'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=authentification',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
             'type'=>'left',			                // This is a Left menu entry
             'titre'=>'New Authentification',
             'mainmenu'=>'istock',
@@ -311,7 +311,7 @@ class modIStock extends DolibarrModules
             'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
         );
         $this->menu[$r++]=array(
-            'fk_menu'=>'fk_mainmenu=auth,fk_leftmenu=list_auth',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+            'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=authentification',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
             'type'=>'left',			                // This is a Left menu entry
             'titre'=>'List Authentification',
             'mainmenu'=>'istock',
@@ -328,81 +328,56 @@ class modIStock extends DolibarrModules
 /////////////////////////////////////////////////////////////////////////////////////////////////////
         
         $this->menu[$r++]=array(
-            'fk_menu'=>'fk_mainmenu=event',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+            'fk_menu'=>'fk_mainmenu=istock',      // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
             'type'=>'left',                          // This is a Top menu entry
             'titre'=>'Evénement',
-            'mainmenu'=>'event',
+            'mainmenu'=>'istock',
             'leftmenu'=>'evenement',
-            'url'=>'/istock/istockindex.php',
+            // 'url'=>'/istock/evenement_list.php',
             'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled.
-            'perms'=>'$user->rights->istock->authentification->read',			                // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
+            'perms'=>'$user->rights->istock->authentification->read',		                // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
             'target'=>'',
             'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
         );
         $this->menu[$r++]=array(
             // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-            'fk_menu'=>'fk_mainmenu=event,fk_leftmenu=new_event',
+            'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=evenement',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'New Evénement',
-            'mainmenu'=>'event',
-            'leftmenu'=>'istock_authentification',
-            'url'=>'/istock/authentification_card.php?action=create',
+            'titre'=>'Liste Evénement',
+            'mainmenu'=>'istock',
+            'leftmenu'=>'evenement',
+            'url'=>'/istock/evenement_list.php',
             // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'langs'=>'istock@istock',
-            'position'=>1100+$r,
+            'position'=>1000+$r,
             // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
             'enabled'=>'$conf->istock->enabled',
             // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
-            'perms'=>'1',
+			'perms'=>'$user->rights->istock->authentification->write',
             'target'=>'',
             // 0=Menu for internal users, 1=external users, 2=both
             'user'=>2
         );
         
+        /*
         $this->menu[$r++]=array(
-            // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-            'fk_menu'=>'fk_mainmenu=event,fk_leftmenu=list_event',
-            // This is a Left menu entry
-            'type'=>'left',
+            'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=evenement',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
+            'type'=>'left',			                // This is a Left menu entry
             'titre'=>'List Evénement',
-            'mainmenu'=>'event',
-            'leftmenu'=>'istock_authentification',
-            'url'=>'/istock/authentification_list.php',
-            // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-            'langs'=>'istock@istock',
-            'position'=>1100+$r,
-            // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-            'enabled'=>'$conf->istock->enabled',
-            // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
-            'perms'=>'1',
+            'mainmenu'=>'istock',
+            'leftmenu'=>'evenement',
+            'url'=>'/istock/evenement_list.php',
+            'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
+            'position'=>1000+$r,
+            'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
+            'perms'=>'$user->rights->istock->authentification->read',			                // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
             'target'=>'',
-            // 0=Menu for internal users, 1=external users, 2=both
-            'user'=>2,
+            'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
         );
-        
-        $this->menu[$r++]=array(
-            // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
-            'fk_menu'=>'fk_mainmenu=config',
-            // This is a Left menu entry
-            'type'=>'left',
-            'titre'=>'List Evénement 1',
-            'mainmenu'=>'config',
-            'leftmenu'=>'istock_authentification',
-            'url'=>'/istock/authentification_list.php',
-            // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
-            'langs'=>'istock@istock',
-            'position'=>1100+$r,
-            // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
-            'enabled'=>'$conf->istock->enabled',
-            // Use 'perms'=>'$user->rights->istock->level1->level2' if you want your menu with a permission rules
-            'perms'=>'1',
-            'target'=>'',
-            // 0=Menu for internal users, 1=external users, 2=both
-            'user'=>2,
-        );
+        */
 
 		/* END MODULEBUILDER LEFTMENU AUTHENTIFICATION */
 

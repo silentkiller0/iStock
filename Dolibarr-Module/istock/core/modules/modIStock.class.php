@@ -64,7 +64,7 @@ class modIStock extends DolibarrModules
         $this->editor_name = 'JDevs10';
         $this->editor_url = 'https://www.example.com';
         // Possible values for version are: 'development', 'experimental', 'dolibarr', 'dolibarr_deprecated' or a version string like 'x.y.z'
-        $this->version = 'development';
+        $this->version = '1.0';
         // Url to the file with your last numberversion of this module
         //$this->url_last_version = 'http://www.example.com/versionmodule.txt';
 
@@ -137,7 +137,7 @@ class modIStock extends DolibarrModules
         //                             2 => array('ISTOCK_MYNEWCONST2', 'chaine', 'myvalue', 'This is another constant to add', 0, 'current', 1)
         // );
         $this->const = array(
-            // 1 => array('ISTOCK_MYCONSTANT', 'chaine', 'avalue', 'This is a constant to add', 1, 'allentities', 1)
+             1 => array('ISTOCK_AUTO_CREATION', 'chaine', 'false', '{"auto_creation":false}', 1, 'allentities', 1)
         );
 
         // Some keys to add into the overwriting translation tables
@@ -244,6 +244,10 @@ class modIStock extends DolibarrModules
         $r = 0;
         // Add here entries to declare new permissions
         /* BEGIN MODULEBUILDER PERMISSIONS */
+		
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////// Authentification Rights ///////////////////////////////////////////////////////////////////////////
+	
         $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
         $this->rights[$r][1] = 'Read objects of IStock'; // Permission label
         $this->rights[$r][4] = 'authentification'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
@@ -259,6 +263,45 @@ class modIStock extends DolibarrModules
         $this->rights[$r][4] = 'authentification'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $r++;
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////// Configuration Rights //////////////////////////////////////////////////////////////////////////////
+	
+		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Read objects of IStock Configuration'; // Permission label
+        $this->rights[$r][4] = 'configuration'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Create/Update objects of IStock Configuration'; // Permission label
+        $this->rights[$r][4] = 'configuration'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Delete objects of IStock Configuration'; // Permission label
+        $this->rights[$r][4] = 'configuration'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////// Evenement Rights //////////////////////////////////////////////////////////////////////////////////
+	
+		$this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Read objects of IStock Evenement'; // Permission label
+        $this->rights[$r][4] = 'evenement'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Create/Update objects of IStock Evenement'; // Permission label
+        $this->rights[$r][4] = 'evenement'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+        $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
+        $this->rights[$r][1] = 'Delete objects of IStock Evenement'; // Permission label
+        $this->rights[$r][4] = 'evenement'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
+        $r++;
+	
         /* END MODULEBUILDER PERMISSIONS */
 
         // Main menu entries to add
@@ -288,7 +331,7 @@ class modIStock extends DolibarrModules
             'titre'=>'Authentification',
             'mainmenu'=>'istock',
             'leftmenu'=>'authentification',
-            'url'=>'/istock/authentification_list.php',
+            // 'url'=>'/istock/authentification_list.php',
             'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled.
@@ -302,7 +345,7 @@ class modIStock extends DolibarrModules
             'titre'=>'New Authentification',
             'mainmenu'=>'istock',
             'leftmenu'=>'istock_authentification_new',
-            'url'=>'/istock/authentification_page.php?action=create',
+            'url'=>'/istock/authentification_card.php?action=create',
             'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled. Use '$leftmenu==\'system\'' to show if leftmenu system is selected.
@@ -333,7 +376,7 @@ class modIStock extends DolibarrModules
             'titre'=>'Evénement',
             'mainmenu'=>'istock',
             'leftmenu'=>'evenement',
-            'url'=>'/istock/evenement_list.php',
+            // 'url'=>'/istock/evenement_list.php',
             'langs'=>'istock@istock',	        // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'position'=>1000+$r,
             'enabled'=>'$conf->istock->enabled',  // Define condition to show or hide menu entry. Use '$conf->istock->enabled' if entry must be visible if module is enabled.
@@ -346,10 +389,10 @@ class modIStock extends DolibarrModules
             'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=evenement',
             // This is a Left menu entry
             'type'=>'left',
-            'titre'=>'New Evénement',
+            'titre'=>'Liste Evénement',
             'mainmenu'=>'istock',
             'leftmenu'=>'evenement',
-            'url'=>'/istock/evenement_card.php?action=create',
+            'url'=>'/istock/evenement_list.php',
             // Lang file to use (without .lang) by module. File must be in langs/code_CODE/ directory.
             'langs'=>'istock@istock',
             'position'=>1000+$r,
@@ -362,6 +405,7 @@ class modIStock extends DolibarrModules
             'user'=>2
         );
         
+        /*
         $this->menu[$r++]=array(
             'fk_menu'=>'fk_mainmenu=istock,fk_leftmenu=evenement',	    // '' if this is a top menu. For left menu, use 'fk_mainmenu=xxx' or 'fk_mainmenu=xxx,fk_leftmenu=yyy' where xxx is mainmenucode and yyy is a leftmenucode
             'type'=>'left',			                // This is a Left menu entry
@@ -376,6 +420,7 @@ class modIStock extends DolibarrModules
             'target'=>'',
             'user'=>2,				                // 0=Menu for internal users, 1=external users, 2=both
         );
+        */
 
 		/* END MODULEBUILDER LEFTMENU AUTHENTIFICATION */
 

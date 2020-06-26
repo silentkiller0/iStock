@@ -20,8 +20,8 @@ CREATE TABLE llx_istock_authentification(
 	date_creation datetime NOT NULL, 
 	identifiant varchar(255) NOT NULL, 
 	last_connexion datetime NOT NULL, 
-	device_platform varchar(255) NOT NULL, 
-	device_type varchar(255) NOT NULL, 
+	device_platform varchar(255), 
+	device_type varchar(255), 
 	fk_user integer NOT NULL
 	-- END MODULEBUILDER FIELDS
 ) ENGINE=innodb;

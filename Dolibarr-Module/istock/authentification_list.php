@@ -104,7 +104,7 @@ $extrafields->fetch_name_optionals_label($object->table_element);
 $search_array_options = $extrafields->getOptionalsFromPost($object->table_element, '', 'search_');
 
 // Default sort order (if not yet defined by previous GETPOST)
-if (!$sortfield) $sortfield = "t.".key($object->fields); // Set here default search field. By default 1st field in definition.
+if (!$sortfield) $sortfield = "t.rowid"; // Set here default search field. By default 1st field in definition.
 if (!$sortorder) $sortorder = "ASC";
 
 // Security check
@@ -236,6 +236,7 @@ $sql .= " FROM ".MAIN_DB_PREFIX.$object->table_element." as t";
 if (is_array($extrafields->attributes[$object->table_element]['label']) && count($extrafields->attributes[$object->table_element]['label'])) $sql .= " LEFT JOIN ".MAIN_DB_PREFIX.$object->table_element."_extrafields as ef on (t.rowid = ef.fk_object)";
 if ($object->ismultientitymanaged == 1) $sql .= " WHERE t.entity IN (".getEntity($object->element).")";
 else $sql .= " WHERE 1 = 1";
+
 foreach ($search as $key => $val)
 {
 	if ($key == 'status' && $search[$key] == -1) continue;
@@ -246,6 +247,7 @@ foreach ($search as $key => $val)
 	}
 	if ($search[$key] != '') $sql .= natural_search($key, $search[$key], (($key == 'status') ? 2 : $mode_search));
 }
+
 if ($search_all) $sql .= natural_search(array_keys($fieldstosearchall), $search_all);
 //$sql.= dolSqlDateFilter("t.field", $search_xxxday, $search_xxxmonth, $search_xxxyear);
 // Add where from extra fields

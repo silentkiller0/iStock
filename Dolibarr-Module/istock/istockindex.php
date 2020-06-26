@@ -61,6 +61,38 @@ $now=dol_now();
 
 
 /*
+ * GET ALL DATA
+ */
+ 
+$sql = "SELECT * FROM llx_istock_evenement ORDER BY date_creation DESC";
+$sql = "SELECT COUNT(*) as count, WEEK(date_creation) as date_c FROM llx_istock_evenement GROUP BY date_c";
+
+"SELECT COUNT(*) as count, MONTHNAME(date_creation) as date_c FROM llx_istock_evenement GROUP BY date_c desc"
+
+$res = $db->query($sql);
+
+
+
+//print("<pre>".print_r($res,true)."</pre>");
+
+
+if ($res->num_rows > 0) {
+	$row = $db->fetch_array($sql);
+	
+	//print("<pre>".print_r($row,true)."</pre>");
+
+	$ISTOCK_AUTO_CREATION = $row['auto_creation'];
+
+}else{
+	
+	$ISTOCK_AUTO_CREATION = 'Nothing...';
+}
+ 
+ //### END GET ALL DATA ################
+
+
+
+/*
  * Actions
  */
 
@@ -81,84 +113,54 @@ print load_fiche_titre($langs->trans("IStockArea"), '', 'istock.png@istock');
 print '<div class="fichecenter"><div class="fichethirdleft">';
 
 
-/* BEGIN MODULEBUILDER DRAFT MYOBJECT
-// Draft MyObject
-if (! empty($conf->istock->enabled) && $user->rights->istock->read)
-{
-	$langs->load("orders");
+// BEGIN MODULEBUILDER DRAFT MYOBJECT
+?>
+<canvas id="myChart" width="400" height="400"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+<script>
+const week_days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
+const week_data = [12, 19, 3, 5, 2, 3, 14];
 
-	$sql = "SELECT c.rowid, c.ref, c.ref_client, c.total_ht, c.tva as total_tva, c.total_ttc, s.rowid as socid, s.nom as name, s.client, s.canvas";
-    $sql.= ", s.code_client";
-	$sql.= " FROM ".MAIN_DB_PREFIX."commande as c";
-	$sql.= ", ".MAIN_DB_PREFIX."societe as s";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc";
-	$sql.= " WHERE c.fk_soc = s.rowid";
-	$sql.= " AND c.fk_statut = 0";
-	$sql.= " AND c.entity IN (".getEntity('commande').")";
-	if (! $user->rights->societe->client->voir && ! $socid) $sql.= " AND s.rowid = sc.fk_soc AND sc.fk_user = " .$user->id;
-	if ($socid)	$sql.= " AND c.fk_soc = ".$socid;
-
-	$resql = $db->query($sql);
-	if ($resql)
-	{
-		$total = 0;
-		$num = $db->num_rows($resql);
-
-		print '<table class="noborder centpercent">';
-		print '<tr class="liste_titre">';
-		print '<th colspan="3">'.$langs->trans("DraftOrders").($num?'<span class="badge marginleftonlyshort">'.$num.'</span>':'').'</th></tr>';
-
-		$var = true;
-		if ($num > 0)
-		{
-			$i = 0;
-			while ($i < $num)
-			{
-
-				$obj = $db->fetch_object($resql);
-				print '<tr class="oddeven"><td class="nowrap">';
-                $orderstatic->id=$obj->rowid;
-                $orderstatic->ref=$obj->ref;
-                $orderstatic->ref_client=$obj->ref_client;
-                $orderstatic->total_ht = $obj->total_ht;
-                $orderstatic->total_tva = $obj->total_tva;
-                $orderstatic->total_ttc = $obj->total_ttc;
-                print $orderstatic->getNomUrl(1);
-                print '</td>';
-				print '<td class="nowrap">';
-				$companystatic->id=$obj->socid;
-				$companystatic->name=$obj->name;
-				$companystatic->client=$obj->client;
-                $companystatic->code_client = $obj->code_client;
-                $companystatic->code_fournisseur = $obj->code_fournisseur;
-                $companystatic->canvas=$obj->canvas;
-				print $companystatic->getNomUrl(1,'customer',16);
-				print '</td>';
-				print '<td class="right" class="nowrap">'.price($obj->total_ttc).'</td></tr>';
-				$i++;
-				$total += $obj->total_ttc;
-			}
-			if ($total>0)
-			{
-
-				print '<tr class="liste_total"><td>'.$langs->trans("Total").'</td><td colspan="2" class="right">'.price($total)."</td></tr>";
-			}
-		}
-		else
-		{
-
-			print '<tr class="oddeven"><td colspan="3" class="opacitymedium">'.$langs->trans("NoOrder").'</td></tr>';
-		}
-		print "</table><br>";
-
-		$db->free($resql);
-	}
-	else
-	{
-		dol_print_error($db);
-	}
-}
-END MODULEBUILDER DRAFT MYOBJECT */
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: week_days,
+        datasets: [{
+            label: "Numbre d'evenement par semaine",
+            data: week_data,
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.2)',
+                'rgba(54, 162, 235, 0.2)',
+                'rgba(255, 206, 86, 0.2)',
+                'rgba(75, 192, 192, 0.2)',
+                'rgba(153, 102, 255, 0.2)',
+                'rgba(255, 159, 64, 0.2)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)',
+                'rgba(255, 159, 64, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+</script>
+<?php
+//END MODULEBUILDER DRAFT MYOBJECT /
 
 
 print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';

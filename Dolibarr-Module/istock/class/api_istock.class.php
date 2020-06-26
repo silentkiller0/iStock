@@ -19,6 +19,8 @@
 use Luracast\Restler\RestException;
 
 dol_include_once('/istock/class/authentification.class.php');
+dol_include_once('/istock/class/configuration.class.php');
+dol_include_once('/istock/class/evenement.class.php');
 
 
 
@@ -40,6 +42,8 @@ class IStockApi extends DolibarrApi
      * @var Authentification $authentification {@type Authentification}
      */
     public $authentification;
+	public $evenement;
+	public $configuration;
 
     /**
      * Constructor
@@ -52,7 +56,12 @@ class IStockApi extends DolibarrApi
         global $db, $conf;
         $this->db = $db;
         $this->authentification = new Authentification($this->db);
+		$this->evenement = new Evenement($this->db);
+		$this->configuration = new Configuration($this->db);
     }
+	
+	/*##########################################################################################################################*/
+	/*#############################################  Gestion Api Login  ########################################################*/
     
     /**
 	 * Login
@@ -71,10 +80,12 @@ class IStockApi extends DolibarrApi
 	 * @throws 403
 	 * @throws 500
 	 *
-	 * @url GET /
-	 * @url POST /
+	 * @url GET /login/
+	 * @url POST /login/
 	 */
-	public function index($login, $password, $entity='', $reset=0) {
+	 
+	public function login($login, $password, $entity='', $reset=0) 
+	{
 
 	    global $conf, $dolibarr_main_authentication, $dolibarr_auto_user;
 
@@ -157,6 +168,9 @@ class IStockApi extends DolibarrApi
 			)
 		);
 	}
+	
+	/*##########################################################################################################################*/
+	/*########################################  Gestion Api Authentification  ##################################################*/
 
     /**
      * Get properties of a authentification object
@@ -171,7 +185,7 @@ class IStockApi extends DolibarrApi
      */
     public function get($id)
     {
-        if (! DolibarrApiAccess::$user->rights->istock->read) {
+        if (! DolibarrApiAccess::$user->rights->istock->authentification->read) {
             throw new RestException(401);
         }
 
@@ -294,7 +308,7 @@ class IStockApi extends DolibarrApi
      */
     public function post($request_data = null)
     {
-        if(! DolibarrApiAccess::$user->rights->istock->write) {
+        if(! DolibarrApiAccess::$user->rights->istock->authentification->write) {
             throw new RestException(401);
         }
         // Check mandatory fields
@@ -320,7 +334,7 @@ class IStockApi extends DolibarrApi
      */
     public function put($id, $request_data = null)
     {
-        if(! DolibarrApiAccess::$user->rights->istock->write) {
+        if(! DolibarrApiAccess::$user->rights->istock->authentification->write) {
             throw new RestException(401);
         }
 
@@ -358,7 +372,7 @@ class IStockApi extends DolibarrApi
      */
     public function delete($id)
     {
-        if (! DolibarrApiAccess::$user->rights->istock->delete) {
+        if (! DolibarrApiAccess::$user->rights->istock->authentification->delete) {
             throw new RestException(401);
         }
         $result = $this->authentification->fetch($id);
@@ -382,6 +396,467 @@ class IStockApi extends DolibarrApi
             )
         );
     }
+	
+	
+	/*##########################################################################################################################*/
+	/*##########################################  Gestion Api Configuration  ###################################################*/
+	
+	/**
+     * Get properties of a configuration object
+     *
+     * Return an array with configuration informations
+     *
+     * @param 	int 	$id ID of configuration
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET configuration/{id}
+     * @throws 	RestException
+     */
+    public function configurationGet($id)
+    {
+        if (! DolibarrApiAccess::$user->rights->istock->configuration->read) {
+            throw new RestException(401);
+        }
+
+        $result = $this->configuration->fetch($id);
+        if (! $result) {
+            throw new RestException(404, 'Configuration not found');
+        }
+
+        if (! DolibarrApi::_checkAccessToResource('configuration', $this->configuration->id, 'istock_configuration')) {
+            throw new RestException(401, 'Access to instance id='.$this->configuration->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+
+        return $this->_cleanObjectDatas($this->configuration);
+    }
+
+
+    /**
+     * List configurations
+     *
+     * Get a list of configurations
+     *
+     * @param string	       $sortfield	        Sort field
+     * @param string	       $sortorder	        Sort order
+     * @param int		       $limit		        Limit for list
+     * @param int		       $page		        Page number
+     * @param string           $sqlfilters          Other criteria to filter answers separated by a comma. Syntax example "(t.ref:like:'SO-%') and (t.date_creation:<:'20160101')"
+     * @return  array                               Array of order objects
+     *
+     * @throws RestException
+     *
+     * @url	GET /configurations/
+     */
+    public function configurationIndex($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $sqlfilters = '')
+    {
+        global $db, $conf;
+
+        $obj_ret = array();
+        $tmpobject = new Configuration($db);
+
+        if(! DolibarrApiAccess::$user->rights->bbb->read) {
+            throw new RestException(401);
+        }
+
+        $socid = DolibarrApiAccess::$user->socid ? DolibarrApiAccess::$user->socid : '';
+
+        $restrictonsocid = 0;	// Set to 1 if there is a field socid in table of object
+
+        // If the internal user must only see his customers, force searching by him
+        $search_sale = 0;
+        if ($restrictonsocid && ! DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) $search_sale = DolibarrApiAccess::$user->id;
+
+        $sql = "SELECT t.rowid";
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
+        $sql.= " FROM ".MAIN_DB_PREFIX.$tmpobject->table_element." as t";
+
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
+        $sql.= " WHERE 1 = 1";
+
+        // Example of use $mode
+        //if ($mode == 1) $sql.= " AND s.client IN (1, 3)";
+        //if ($mode == 2) $sql.= " AND s.client IN (2, 3)";
+
+        if ($tmpobject->ismultientitymanaged) $sql.= ' AND t.entity IN ('.getEntity('configuration').')';
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= " AND t.fk_soc = sc.fk_soc";
+        if ($restrictonsocid && $socid) $sql.= " AND t.fk_soc = ".$socid;
+        if ($restrictonsocid && $search_sale > 0) $sql.= " AND t.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
+        // Insert sale filter
+        if ($restrictonsocid && $search_sale > 0) {
+            $sql .= " AND sc.fk_user = ".$search_sale;
+        }
+        if ($sqlfilters)
+        {
+            if (! DolibarrApi::_checkFilters($sqlfilters)) {
+                throw new RestException(503, 'Error when validating parameter sqlfilters '.$sqlfilters);
+            }
+            $regexstring='\(([^:\'\(\)]+:[^:\'\(\)]+:[^:\(\)]+)\)';
+            $sql.=" AND (".preg_replace_callback('/'.$regexstring.'/', 'DolibarrApi::_forge_criteria_callback', $sqlfilters).")";
+        }
+
+        $sql.= $db->order($sortfield, $sortorder);
+        if ($limit)	{
+            if ($page < 0) {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+
+            $sql.= $db->plimit($limit + 1, $offset);
+        }
+
+        $result = $db->query($sql);
+        if ($result)
+        {
+            $num = $db->num_rows($result);
+            while ($i < $num)
+            {
+                $obj = $db->fetch_object($result);
+                $configuration_static = new Configuration($db);
+                if($configuration_static->fetch($obj->rowid)) {
+                    $obj_ret[] = $this->_cleanObjectDatas($configuration_static);
+                }
+                $i++;
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieving configuration list: '.$db->lasterror());
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No configuration found');
+        }
+        return $obj_ret;
+    }
+
+    /**
+     * Create configuration object
+     *
+     * @param array $request_data   Request datas
+     * @return int  ID of configuration
+     *
+     * @url	POST configuration/
+     */
+    public function configurationPost($request_data = null)
+    {
+        if(! DolibarrApiAccess::$user->rights->istock->configuration->write) {
+            throw new RestException(401);
+        }
+        // Check mandatory fields
+        $result = $this->_validate($request_data);
+
+        foreach($request_data as $field => $value) {
+            $this->configuration->$field = $value;
+        }
+        if( ! $this->configuration->create(DolibarrApiAccess::$user)) {
+            throw new RestException(500, "Error creating Configuration", array_merge(array($this->configuration->error), $this->configuration->errors));
+        }
+        return $this->configuration->id;
+    }
+
+    /**
+     * Update configuration
+     *
+     * @param int   $id             Id of configuration to update
+     * @param array $request_data   Datas
+     * @return int
+     *
+     * @url	PUT configuration/{id}
+     */
+    public function configurationsPutById($id, $request_data = null)
+    {
+        if(! DolibarrApiAccess::$user->rights->istock->configuration->write) {
+            throw new RestException(401);
+        }
+
+        $result = $this->configuration->fetch($id);
+        if( ! $result ) {
+            throw new RestException(404, 'Configuration not found');
+        }
+
+        if( ! DolibarrApi::_checkAccessToResource('configuration', $this->configuration->id, 'istock_configuration')) {
+            throw new RestException(401, 'Access to instance id='.$this->configuration->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+
+        foreach($request_data as $field => $value) {
+            if ($field == 'id') continue;
+            $this->configuration->$field = $value;
+        }
+
+        if ($this->configuration->update($id, DolibarrApiAccess::$user) > 0)
+        {
+            return $this->get($id);
+        }
+        else
+        {
+            throw new RestException(500, $this->configuration->error);
+        }
+    }
+	
+	/**
+     * Delete configuration
+     *
+     * @param   int     $id   Configurations ID
+     * @return  array
+     *
+     * @url	DELETE configuration/{id}
+     */
+    public function deleteConfigurationById($id)
+    {
+        if (! DolibarrApiAccess::$user->rights->istock->configuration->delete) {
+            throw new RestException(401);
+        }
+		
+		//find configuration
+        $result = $this->configuration->fetch($id);
+        if (! $result) {
+            throw new RestException(404, 'Configuration not found');
+        }
+
+        //delete it
+        if (! $this->configuration->delete(DolibarrApiAccess::$user))
+        {
+            throw new RestException(500, 'Error when deleting Configuration : '.$this->configuration->error);
+        }
+
+		//send success message
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Configuration deleted'
+            )
+        );
+    }
+	
+	
+	/*##########################################################################################################################*/
+	/*############################################  Gestion Api Evenement  #####################################################*/
+
+    /**
+     * Get properties of a evenement object
+     *
+     * Return an array with evenement informations
+     *
+     * @param 	int 	$id ID of evenement
+     * @return 	array|mixed data without useless information
+     *
+     * @url	GET evenement/{id}
+     * @throws 	RestException
+     */
+    public function evenementGet($id)
+    {
+        if (! DolibarrApiAccess::$user->rights->istock->evenement->read) {
+            throw new RestException(401);
+        }
+
+        $result = $this->evenement->fetch($id);
+        if (! $result) {
+            throw new RestException(404, 'Evenement not found');
+        }
+
+        if (! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_authentification')) {
+            throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+
+        return $this->_cleanObjectDatas($this->evenement);
+    }
+
+
+    /**
+     * List evenements
+     *
+     * Get a list of evenements
+     *
+     * @param string	       $sortfield	        Sort field
+     * @param string	       $sortorder	        Sort order
+     * @param int		       $limit		        Limit for list
+     * @param int		       $page		        Page number
+     * @param string           $sqlfilters          Other criteria to filter answers separated by a comma. Syntax example "(t.ref:like:'SO-%') and (t.date_creation:<:'20160101')"
+     * @return  array                               Array of order objects
+     *
+     * @throws RestException
+     *
+     * @url	GET /evenements/
+     */
+    public function evenementIndex($sortfield = "t.rowid", $sortorder = 'ASC', $limit = 100, $page = 0, $sqlfilters = '')
+    {
+        global $db, $conf;
+
+        $obj_ret = array();
+        $tmpobject = new Evenement($db);
+
+        if(! DolibarrApiAccess::$user->rights->bbb->read) {
+            throw new RestException(401);
+        }
+
+        $socid = DolibarrApiAccess::$user->socid ? DolibarrApiAccess::$user->socid : '';
+
+        $restrictonsocid = 0;	// Set to 1 if there is a field socid in table of object
+
+        // If the internal user must only see his customers, force searching by him
+        $search_sale = 0;
+        if ($restrictonsocid && ! DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) $search_sale = DolibarrApiAccess::$user->id;
+
+        $sql = "SELECT t.rowid";
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql .= ", sc.fk_soc, sc.fk_user"; // We need these fields in order to filter by sale (including the case where the user can only see his prospects)
+        $sql.= " FROM ".MAIN_DB_PREFIX.$tmpobject->table_element." as t";
+
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= ", ".MAIN_DB_PREFIX."societe_commerciaux as sc"; // We need this table joined to the select in order to filter by sale
+        $sql.= " WHERE 1 = 1";
+
+        // Example of use $mode
+        //if ($mode == 1) $sql.= " AND s.client IN (1, 3)";
+        //if ($mode == 2) $sql.= " AND s.client IN (2, 3)";
+
+        if ($tmpobject->ismultientitymanaged) $sql.= ' AND t.entity IN ('.getEntity('evenement').')';
+        if ($restrictonsocid && (!DolibarrApiAccess::$user->rights->societe->client->voir && !$socid) || $search_sale > 0) $sql.= " AND t.fk_soc = sc.fk_soc";
+        if ($restrictonsocid && $socid) $sql.= " AND t.fk_soc = ".$socid;
+        if ($restrictonsocid && $search_sale > 0) $sql.= " AND t.rowid = sc.fk_soc";		// Join for the needed table to filter by sale
+        // Insert sale filter
+        if ($restrictonsocid && $search_sale > 0) {
+            $sql .= " AND sc.fk_user = ".$search_sale;
+        }
+        if ($sqlfilters)
+        {
+            if (! DolibarrApi::_checkFilters($sqlfilters)) {
+                throw new RestException(503, 'Error when validating parameter sqlfilters '.$sqlfilters);
+            }
+            $regexstring='\(([^:\'\(\)]+:[^:\'\(\)]+:[^:\(\)]+)\)';
+            $sql.=" AND (".preg_replace_callback('/'.$regexstring.'/', 'DolibarrApi::_forge_criteria_callback', $sqlfilters).")";
+        }
+
+        $sql.= $db->order($sortfield, $sortorder);
+        if ($limit)	{
+            if ($page < 0) {
+                $page = 0;
+            }
+            $offset = $limit * $page;
+
+            $sql.= $db->plimit($limit + 1, $offset);
+        }
+
+        $result = $db->query($sql);
+        if ($result)
+        {
+            $num = $db->num_rows($result);
+            while ($i < $num)
+            {
+                $obj = $db->fetch_object($result);
+                $evenement_static = new Evenement($db);
+                if($evenement_static->fetch($obj->rowid)) {
+                    $obj_ret[] = $this->_cleanObjectDatas($evenement_static);
+                }
+                $i++;
+            }
+        }
+        else {
+            throw new RestException(503, 'Error when retrieving evenement list: '.$db->lasterror());
+        }
+        if( ! count($obj_ret)) {
+            throw new RestException(404, 'No evenement found');
+        }
+        return $obj_ret;
+    }
+
+    /**
+     * Create evenement object
+     *
+     * @param array $request_data   Request datas
+     * @return int  ID of evenement
+     *
+     * @url	POST evenement/
+     */
+    public function evenementPost($request_data = null)
+    {
+        if(! DolibarrApiAccess::$user->rights->istock->evenement->write) {
+            throw new RestException(401);
+        }
+        // Check mandatory fields
+        $result = $this->_validate($request_data);
+
+        foreach($request_data as $field => $value) {
+            $this->evenement->$field = $value;
+        }
+        if( ! $this->evenement->create(DolibarrApiAccess::$user)) {
+            throw new RestException(500, "Error creating Evenement", array_merge(array($this->evenement->error), $this->evenement->errors));
+        }
+        return $this->evenement->id;
+    }
+
+    /**
+     * Update evenement
+     *
+     * @param int   $id             Id of evenement to update
+     * @param array $request_data   Datas
+     * @return int
+     *
+     * @url	PUT evenement/{id}
+     */
+    public function evenementPut($id, $request_data = null)
+    {
+        if(! DolibarrApiAccess::$user->rights->istock->evenement->write) {
+            throw new RestException(401);
+        }
+
+        $result = $this->evenement->fetch($id);
+        if( ! $result ) {
+            throw new RestException(404, 'Evenement not found');
+        }
+
+        if( ! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_evenement')) {
+            throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+
+        foreach($request_data as $field => $value) {
+            if ($field == 'id') continue;
+            $this->evenement->$field = $value;
+        }
+
+        if ($this->evenement->update($id, DolibarrApiAccess::$user) > 0)
+        {
+            return $this->get($id);
+        }
+        else
+        {
+            throw new RestException(500, $this->evenement->error);
+        }
+    }
+
+    /**
+     * Delete evenement
+     *
+     * @param   int     $id   Rvenement ID
+     * @return  array
+     *
+     * @url	DELETE evenement/{id}
+     */
+    public function evenementDelete($id)
+    {
+        if (! DolibarrApiAccess::$user->rights->istock->evenement->delete) {
+            throw new RestException(401);
+        }
+        $result = $this->evenement->fetch($id);
+        if (! $result) {
+            throw new RestException(404, 'Evenement not found');
+        }
+
+        if (! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_authentification')) {
+            throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
+        }
+
+        if (! $this->evenement->delete(DolibarrApiAccess::$user))
+        {
+            throw new RestException(500, 'Error when deleting Evenement : '.$this->evenement->error);
+        }
+
+        return array(
+            'success' => array(
+                'code' => 200,
+                'message' => 'Evenement deleted'
+            )
+        );
+    }
+	
+	
+	/*##########################################################################################################################*/
 
 
     // phpcs:disable PEAR.NamingConventions.ValidFunctionName.PublicUnderscore

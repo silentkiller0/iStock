@@ -41,7 +41,7 @@ global $langs, $user;
 // Libraries
 require_once DOL_DOCUMENT_ROOT."/core/lib/admin.lib.php";
 require_once '../lib/istock.lib.php';
-//require_once "../class/myclass.class.php";
+require_once "../core/modules/modIStock.class.php";
 
 // Translations
 $langs->loadLangs(array("admin", "istock@istock"));
@@ -53,12 +53,42 @@ if (!$user->admin) accessforbidden();
 $action = GETPOST('action', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 
+/*
 $arrayofparameters = array(
 	'ISTOCK_MYPARAM1'=>array('css'=>'minwidth200', 'enabled'=>1),
-	'ISTOCK_MYPARAM2'=>array('css'=>'minwidth500', 'enabled'=>1)
+	'ISTOCK_MYPARAM2'=>array('css'=>'minwidth200', 'enabled'=>1),
+	'ISTOCK_MYPARAM3'=>array('css'=>'minwidth200', 'enabled'=>1),
+);
+*/
+
+// get my settings labels from modIStock const
+$modIStock = new modIStock($db);
+$arrayofparameters = array(
+	'hhh' =>array('css'=>'minwidth200', 'enabled'=>1)
 );
 
+// get the values from the db
+$sql = "SELECT * FROM llx_istock_configuration where rowid = 1";
+$res = $db->query($sql);
 
+//print("<pre>".print_r($res,true)."</pre>");
+
+
+if ($res->num_rows > 0) {
+	$row = $db->fetch_array($sql);
+	
+	//print("<pre>".print_r($row,true)."</pre>");
+
+	$ISTOCK_AUTO_CREATION = $row['auto_creation'];
+
+}else{
+	
+	$ISTOCK_AUTO_CREATION = 'Nothing...';
+}
+
+
+//print("<pre>".print_r($modIStock->const[1],true)."</pre>");
+//die();
 
 /*
  * Actions
@@ -88,61 +118,76 @@ $head = istockAdminPrepareHead();
 dol_fiche_head($head, 'settings', '', -1, "istock@istock");
 
 // Setup page goes here
-echo '<span class="opacitymedium">'.$langs->trans("IStockSetupPage").'</span><br><br>';
+// echo '<span class="opacitymedium">'.$langs->trans("IStockSetupPage").'</span><br><br>';
 
 
-if ($action == 'edit')
+if ($action == 'update')
 {
-	print '<form method="POST" action="'.$_SERVER["PHP_SELF"].'">';
-	print '<input type="hidden" name="token" value="'.newToken().'">';
-	print '<input type="hidden" name="action" value="update">';
+	
+	if($_POST['auto_count_creation'] != 'true' && $_POST['auto_count_creation'] != 'false'){
+		?>
+		<script>
+			alert("La valeur de 'création des comptes en automatique' n'est pas respecté !\nVeuillez renseigner 'true' ou 'false' dans ce champ.");
+		</script>
+		<?php
 
-	print '<table class="noborder centpercent">';
-	print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
+	}else{
+		//print("<pre>".print_r($_POST,true)."</pre>");
+		$ISTOCK_AUTO_CREATION = $_POST['auto_count_creation'];
+	
+		if ($res->num_rows == 0) {
+			
+			//If first insert or no values in Database
+			$sql = "INSERT INTO llx_istock_configuration (rowid, auto_creation) VALUES(1, '".$ISTOCK_AUTO_CREATION."')";
+			$db->query($sql);
 
-	foreach ($arrayofparameters as $key => $val)
-	{
-		print '<tr class="oddeven"><td>';
-		$tooltiphelp = (($langs->trans($key.'Tooltip') != $key.'Tooltip') ? $langs->trans($key.'Tooltip') : '');
-		print $form->textwithpicto($langs->trans($key), $tooltiphelp);
-		print '</td><td><input name="'.$key.'"  class="flat '.(empty($val['css']) ? 'minwidth200' : $val['css']).'" value="'.$conf->global->$key.'"></td></tr>';
-	}
-	print '</table>';
-
-	print '<br><div class="center">';
-	print '<input class="button" type="submit" value="'.$langs->trans("Save").'">';
-	print '</div>';
-
-	print '</form>';
-	print '<br>';
-}
-else
-{
-	if (!empty($arrayofparameters))
-	{
-		print '<table class="noborder centpercent">';
-		print '<tr class="liste_titre"><td class="titlefield">'.$langs->trans("Parameter").'</td><td>'.$langs->trans("Value").'</td></tr>';
-
-		foreach ($arrayofparameters as $key => $val)
-		{
-			print '<tr class="oddeven"><td>';
-			$tooltiphelp = (($langs->trans($key.'Tooltip') != $key.'Tooltip') ? $langs->trans($key.'Tooltip') : '');
-			print $form->textwithpicto($langs->trans($key), $tooltiphelp);
-			print '</td><td>'.$conf->global->$key.'</td></tr>';
+		}else{
+			//Update values in Database
+			$sql = "UPDATE llx_istock_configuration SET auto_creation='".$ISTOCK_AUTO_CREATION."' WHERE rowid = 1";
+			$res = $db->query($sql);
 		}
-
-		print '</table>';
-
-		print '<div class="tabsAction">';
-		print '<a class="butAction" href="'.$_SERVER["PHP_SELF"].'?action=edit">'.$langs->trans("Modify").'</a>';
-		print '</div>';
+		
+		$db->commit();
+		header("location:setup.php");
 	}
-	else
-	{
-		print '<br>'.$langs->trans("NothingToSetup");
-	}
+
 }
 
+?>
+
+<form id="form_istock" name="form_istock" method="POST" action="setup.php">
+	
+	<input type="hidden" name="action" value="update">
+	<h3>Autoriser la création des comptes en automatique : </h3>
+	<input type="text" name="auto_count_creation" maxlength="5" value="<?php print $ISTOCK_AUTO_CREATION ?>"/>
+
+	<br>
+	<br>
+	<br>
+	<div id="maj_const" onclick="document.getElementById('form_istock').submit()">Update</div>
+
+</form>
+
+<style>
+#maj_const{
+	border: 1px solid black;
+	width: 100px;
+	text-align: center;
+	padding: 7px 0px;
+	font-size: 15px;
+	font-weight: bold;
+	background: #306da0;
+	text-shadow: 1px 1px 1px black;
+	color: white;
+	cursor: pointer;
+	transition:0.2s ease;
+}
+#maj_const:hover{
+	opacity:0.7;
+}
+</style>
+ 
+<?php
 
 // Page end
 dol_fiche_end();
