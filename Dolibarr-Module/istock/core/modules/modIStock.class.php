@@ -249,17 +249,17 @@ class modIStock extends DolibarrModules
 	////////////////////////// Authentification Rights ///////////////////////////////////////////////////////////////////////////
 	
         $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-        $this->rights[$r][1] = 'Read objects of IStock'; // Permission label
+        $this->rights[$r][1] = 'Read objects of IStock Authentification'; // Permission label
         $this->rights[$r][4] = 'authentification'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $this->rights[$r][5] = 'read'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $r++;
         $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-        $this->rights[$r][1] = 'Create/Update objects of IStock'; // Permission label
+        $this->rights[$r][1] = 'Create/Update objects of IStock Authentification'; // Permission label
         $this->rights[$r][4] = 'authentification'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $this->rights[$r][5] = 'write'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $r++;
         $this->rights[$r][0] = $this->numero + $r; // Permission id (must not be already used)
-        $this->rights[$r][1] = 'Delete objects of IStock'; // Permission label
+        $this->rights[$r][1] = 'Delete objects of IStock Authentification'; // Permission label
         $this->rights[$r][4] = 'authentification'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $this->rights[$r][5] = 'delete'; // In php code, permission will be checked by test if ($user->rights->istock->level1->level2)
         $r++;

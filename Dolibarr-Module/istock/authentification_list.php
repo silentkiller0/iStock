@@ -498,6 +498,8 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	// Store properties in $object
 	$object->setVarsFromFetchObj($obj);
+	
+	$href = "authentification_card.php?id=".$obj->rowid;
 
 	// Show here line of result
 	print '<tr class="oddeven">';
@@ -515,6 +517,16 @@ while ($i < ($limit ? min($num, $limit) : $num))
 
 	    if (!empty($arrayfields['t.'.$key]['checked']))
 		{
+			if($key == 'identifiant'){
+				print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
+				print "<a href='$href' target='_blank'>";
+				if ($key == 'status') print $object->getLibStatut(5);
+				else print $object->showOutputField($val, $key, $object->$key, '');
+				print "</a></td>";
+				print '</td>';
+				continue;
+			}
+			
 			print '<td'.($cssforfield ? ' class="'.$cssforfield.'"' : '').'>';
 			if ($key == 'status') print $object->getLibStatut(5);
 			else print $object->showOutputField($val, $key, $object->$key, '');

@@ -23,6 +23,11 @@
  *	\ingroup    istock
  *	\brief      Home page of istock top menu
  */
+/*
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+*/
 
 // Load Dolibarr environment
 $res=0;
@@ -63,34 +68,46 @@ $now=dol_now();
 /*
  * GET ALL DATA
  */
- 
-$sql = "SELECT * FROM llx_istock_evenement ORDER BY date_creation DESC";
-$sql = "SELECT COUNT(*) as count, WEEK(date_creation) as date_c FROM llx_istock_evenement GROUP BY date_c";
 
-"SELECT COUNT(*) as count, MONTHNAME(date_creation) as date_c FROM llx_istock_evenement GROUP BY date_c desc"
-
-$res = $db->query($sql);
-
-
-
-//print("<pre>".print_r($res,true)."</pre>");
-
-
-if ($res->num_rows > 0) {
-	$row = $db->fetch_array($sql);
-	
-	//print("<pre>".print_r($row,true)."</pre>");
-
-	$ISTOCK_AUTO_CREATION = $row['auto_creation'];
-
-}else{
-	
-	$ISTOCK_AUTO_CREATION = 'Nothing...';
+//print dirname(__FILE__);
+// Check all backend scripts before loading...
+if(!is_file('backend/load_event_statistic.php') || !is_file('backend/load_user_statistic.php')){
+	die("Backend scripts are missing!");
 }
- 
- //### END GET ALL DATA ################
+
+// get iStock user statis data
+require_once ('backend/load_user_statistic.php');
+
+$load = new Load_User_Statistic($db);
+$load->Load_Data();
+$load->Load_Mobile_Data();
+
+//print("<pre>".print_r($load->return_Data(), true)."</pre>");
+
+$accounts_ = $load->accounts_;
+$adminAccountColors = $load->adminAccountColors;
+$otherAccountColors = $load->otherAccountColors;
+$account_data = $load->account_data;
+
+$OS_DEVICE_ = $load->OS_DEVICE_;
+$OS_DEVICE_BG_Colors = $load->OS_DEVICE_BG_Colors;
+$OS_DEVICE_BD_Colors = $load->OS_DEVICE_BD_Colors;
+$OS_DEVICE_data = $load->OS_DEVICE_data;
 
 
+
+// get iStock event statis data
+require_once ('backend/load_event_statistic.php');
+
+$load = new Load_Event_Statistic($db);
+$load->Load_Data();
+//print("<pre>".print_r($load->Load_Data(), true)."</pre>");
+
+$months_ = $load->months_;
+$currentYearColors = $load->currentYearColors;
+$lastYearColors = $load->lastYearColors;
+$eventListOfEachMonth_thisYear = $load->eventListOfEachMonth_thisYear;
+$eventListOfEachMonth_lastYear = $load->eventListOfEachMonth_lastYear;
 
 /*
  * Actions
@@ -103,53 +120,231 @@ if ($res->num_rows > 0) {
  * View
  */
 
-$form = new Form($db);
-$formfile = new FormFile($db);
 
 llxHeader("", $langs->trans("IStockArea"));
 
-print load_fiche_titre($langs->trans("IStockArea"), '', 'istock.png@istock');
+print load_fiche_titre($langs->trans("IStock Dashbord"), '', 'istock.png@istock');
 
-print '<div class="fichecenter"><div class="fichethirdleft">';
+//print '<div class="fichecenter">';
 
 
 // BEGIN MODULEBUILDER DRAFT MYOBJECT
 ?>
-<canvas id="myChart" width="400" height="400"></canvas>
+<div style="display: flex; flex-wrap: wrap; marging: 10px">
+	<div class="chart-container" style="position: relative; padding: 10px; width: 500px; height: auto;">
+		<canvas id="myChart_auth"></canvas>
+	</div>
+	<div class="chart-container" style="position: relative; padding: 10px; width: 600px; height: auto;">
+		<canvas id="myChart"></canvas>
+	</div>
+	<div class="chart-container" style="position: relative; padding: 10px; width: 600px; height: auto;">
+		<canvas id="myChart_device"></canvas>
+	</div>
+</div>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
 <script>
-const week_days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-const week_data = [12, 19, 3, 5, 2, 3, 14];
+//  User data chart
+const accounts = <?php print $accounts_ ?>;
+const account_data = [
+	<?php print $account_data[0]['numbers'] ?>,
+	<?php print $account_data[1]['numbers'] ?>
+];
 
-var ctx = document.getElementById('myChart').getContext('2d');
-var myChart = new Chart(ctx, {
-    type: 'bar',
+var ctx = document.getElementById('myChart_auth').getContext('2d');
+var myChart_auth = new Chart(ctx, {
+    type: 'doughnut',
     data: {
-        labels: week_days,
+        labels: accounts,
         datasets: [{
-            label: "Numbre d'evenement par semaine",
-            data: week_data,
+            label: "<?php print "Numbre de compte iStock" ?>",
+            data: account_data,
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
-                'rgba(54, 162, 235, 0.2)',
-                'rgba(255, 206, 86, 0.2)',
-                'rgba(75, 192, 192, 0.2)',
-                'rgba(153, 102, 255, 0.2)',
-                'rgba(255, 159, 64, 0.2)'
+                '<?php print $adminAccountColors['backgroundColor'] ?>',
+                '<?php print $otherAccountColors['backgroundColor'] ?>'
             ],
             borderColor: [
-                'rgba(255, 99, 132, 1)',
-                'rgba(54, 162, 235, 1)',
-                'rgba(255, 206, 86, 1)',
-                'rgba(75, 192, 192, 1)',
-                'rgba(153, 102, 255, 1)',
-                'rgba(255, 159, 64, 1)'
+                '<?php print $adminAccountColors['borderColor'] ?>',
+				'<?php print $otherAccountColors['borderColor'] ?>'
             ],
             borderWidth: 1
         }]
     },
     options: {
+		responsive: true,
+		legend: {
+            position: 'bottom',
+        },
+		animation: {
+            animateScale: true,
+            animateRotate: true
+        },
+		scales: {
+			yAxes: [{
+				ticks: {
+					beginAtZero:true
+				}
+			}]
+		}
+    }
+});
+
+// Events chart data
+const months = <?php print $months_ ?>;
+
+const current_year_data = [
+<?php print $eventListOfEachMonth_thisYear[0]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[1]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[2]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[3]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[4]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[5]['Events'] ?>, 
+<?php print $eventListOfEachMonth_thisYear[6]['Events'] ?>,
+<?php print $eventListOfEachMonth_thisYear[7]['Events'] ?>,
+<?php print $eventListOfEachMonth_thisYear[8]['Events'] ?>,
+<?php print $eventListOfEachMonth_thisYear[9]['Events'] ?>,
+<?php print $eventListOfEachMonth_thisYear[10]['Events'] ?>,
+<?php print $eventListOfEachMonth_thisYear[11]['Events'] ?>
+];
+
+const last_year_data = [
+<?php print $eventListOfEachMonth_lastYear[0]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[1]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[2]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[3]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[4]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[5]['Events'] ?>, 
+<?php print $eventListOfEachMonth_lastYear[6]['Events'] ?>,
+<?php print $eventListOfEachMonth_lastYear[7]['Events'] ?>,
+<?php print $eventListOfEachMonth_lastYear[8]['Events'] ?>,
+<?php print $eventListOfEachMonth_lastYear[9]['Events'] ?>,
+<?php print $eventListOfEachMonth_lastYear[10]['Events'] ?>,
+<?php print $eventListOfEachMonth_lastYear[11]['Events'] ?>
+];
+
+var ctx = document.getElementById('myChart').getContext('2d');
+var myChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: months,
+        datasets: [{
+            label: "<?php print "Numbre d'evenement cette annee" ?>",
+            data: current_year_data,
+            backgroundColor: [
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+                '<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>',
+				'<?php print $currentYearColors['backgroundColor'] ?>'
+            ],
+            borderColor: [
+                '<?php print $currentYearColors['borderColor'] ?>',
+                '<?php print $currentYearColors['borderColor'] ?>',
+                '<?php print $currentYearColors['borderColor'] ?>',
+                '<?php print $currentYearColors['borderColor'] ?>',
+                '<?php print $currentYearColors['borderColor'] ?>',
+                '<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>',
+				'<?php print $currentYearColors['borderColor'] ?>'
+            ],
+            borderWidth: 1
+        },
+		{
+            label: "Numbre d'evenement l'annee precedant",
+            data: last_year_data,
+            backgroundColor: [
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+                '<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>',
+				'<?php print $lastYearColors['backgroundColor'] ?>'
+            ],
+            borderColor: [
+                '<?php print $lastYearColors['borderColor'] ?>',
+                '<?php print $lastYearColors['borderColor'] ?>',
+                '<?php print $lastYearColors['borderColor'] ?>',
+                '<?php print $lastYearColors['borderColor'] ?>',
+                '<?php print $lastYearColors['borderColor'] ?>',
+                '<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>',
+				'<?php print $lastYearColors['borderColor'] ?>'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+		responsive: true,
         scales: {
+            yAxes: [{
+                ticks: {
+                    beginAtZero: true
+                }
+            }]
+        }
+    }
+});
+
+
+// User device data
+const _OS_DEVICE_ = <?php print $OS_DEVICE_ ?>;
+const _OS_DEVICE_data_ = [
+	<?php print $OS_DEVICE_data['Android'] ?>,
+	<?php print $OS_DEVICE_data['IOS'] ?>,
+	<?php print $OS_DEVICE_data['Telephone'] ?>,
+	<?php print $OS_DEVICE_data['Tablette'] ?>
+];
+
+
+var ctx = document.getElementById('myChart_device').getContext('2d');
+var mixedChart = new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: _OS_DEVICE_,
+        datasets: [{
+            label: "<?php print "Numbre de type d'appareil" ?>",
+            data: _OS_DEVICE_data_,
+            backgroundColor: [
+                '<?php print $OS_DEVICE_BG_Colors['backgroundColor'][0] ?>',
+				'<?php print $OS_DEVICE_BG_Colors['backgroundColor'][1] ?>',
+				'<?php print $OS_DEVICE_BG_Colors['backgroundColor'][2] ?>',
+				'<?php print $OS_DEVICE_BG_Colors['backgroundColor'][3] ?>'
+            ],
+            borderColor: [
+				'<?php print $OS_DEVICE_BD_Colors['borderColor'][0] ?>',
+				'<?php print $OS_DEVICE_BD_Colors['borderColor'][1] ?>',
+				'<?php print $OS_DEVICE_BD_Colors['borderColor'][2] ?>',
+				'<?php print $OS_DEVICE_BD_Colors['borderColor'][3] ?>'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+		responsive: true,
+		legend: {
+            position: 'top',
+        },
+		scales: {
             yAxes: [{
                 ticks: {
                     beginAtZero: true
@@ -163,7 +358,7 @@ var myChart = new Chart(ctx, {
 //END MODULEBUILDER DRAFT MYOBJECT /
 
 
-print '</div><div class="fichetwothirdright"><div class="ficheaddleft">';
+//print '<div class="fichetwothirdright"><div class="ficheaddleft">';
 
 
 $NBMAX=3;
@@ -233,7 +428,7 @@ if (! empty($conf->istock->enabled) && $user->rights->istock->read)
 }
 */
 
-print '</div></div></div>';
+//print '</div></div>';
 
 // End of page
 llxFooter();

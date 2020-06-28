@@ -193,10 +193,12 @@ class IStockApi extends DolibarrApi
         if (! $result) {
             throw new RestException(404, 'Authentification not found');
         }
-
+		
+		/*
         if (! DolibarrApi::_checkAccessToResource('authentification', $this->authentification->id, 'istock_authentification')) {
             throw new RestException(401, 'Access to instance id='.$this->authentification->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         return $this->_cleanObjectDatas($this->authentification);
     }
@@ -225,7 +227,7 @@ class IStockApi extends DolibarrApi
         $obj_ret = array();
         $tmpobject = new Authentification($db);
 
-        if(! DolibarrApiAccess::$user->rights->bbb->read) {
+        if(! DolibarrApiAccess::$user->rights->istock->authentification->read) {
             throw new RestException(401);
         }
 
@@ -343,9 +345,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Authentification not found');
         }
 
+		/*
         if( ! DolibarrApi::_checkAccessToResource('authentification', $this->authentification->id, 'istock_authentification')) {
             throw new RestException(401, 'Access to instance id='.$this->authentification->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         foreach($request_data as $field => $value) {
             if ($field == 'id') continue;
@@ -380,9 +384,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Authentification not found');
         }
 
+		/*
         if (! DolibarrApi::_checkAccessToResource('authentification', $this->authentification->id, 'istock_authentification')) {
             throw new RestException(401, 'Access to instance id='.$this->authentification->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         if (! $this->authentification->delete(DolibarrApiAccess::$user))
         {
@@ -423,9 +429,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Configuration not found');
         }
 
+		/*
         if (! DolibarrApi::_checkAccessToResource('configuration', $this->configuration->id, 'istock_configuration')) {
             throw new RestException(401, 'Access to instance id='.$this->configuration->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         return $this->_cleanObjectDatas($this->configuration);
     }
@@ -454,7 +462,7 @@ class IStockApi extends DolibarrApi
         $obj_ret = array();
         $tmpobject = new Configuration($db);
 
-        if(! DolibarrApiAccess::$user->rights->bbb->read) {
+        if(! DolibarrApiAccess::$user->rights->istock->configuration->read) {
             throw new RestException(401);
         }
 
@@ -572,9 +580,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Configuration not found');
         }
 
+		/*
         if( ! DolibarrApi::_checkAccessToResource('configuration', $this->configuration->id, 'istock_configuration')) {
             throw new RestException(401, 'Access to instance id='.$this->configuration->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         foreach($request_data as $field => $value) {
             if ($field == 'id') continue;
@@ -652,9 +662,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Evenement not found');
         }
 
+		/*
         if (! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_authentification')) {
             throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         return $this->_cleanObjectDatas($this->evenement);
     }
@@ -683,7 +695,7 @@ class IStockApi extends DolibarrApi
         $obj_ret = array();
         $tmpobject = new Evenement($db);
 
-        if(! DolibarrApiAccess::$user->rights->bbb->read) {
+        if(! DolibarrApiAccess::$user->rights->istock->evenement->read) {
             throw new RestException(401);
         }
 
@@ -801,9 +813,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Evenement not found');
         }
 
+		/*
         if( ! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_evenement')) {
             throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         foreach($request_data as $field => $value) {
             if ($field == 'id') continue;
@@ -838,9 +852,11 @@ class IStockApi extends DolibarrApi
             throw new RestException(404, 'Evenement not found');
         }
 
+		/*
         if (! DolibarrApi::_checkAccessToResource('evenement', $this->evenement->id, 'istock_authentification')) {
             throw new RestException(401, 'Access to instance id='.$this->evenement->id.' of object not allowed for login '.DolibarrApiAccess::$user->login);
         }
+		*/
 
         if (! $this->evenement->delete(DolibarrApiAccess::$user))
         {
