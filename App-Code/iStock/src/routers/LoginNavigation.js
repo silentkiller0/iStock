@@ -28,22 +28,3 @@ class LoginNavigation extends Component {
   }
 }
 export default LoginNavigation;
-
-
-/*
-class LoginNavigation extends Component {
-    render() {
-      const Drawer = createDrawerNavigator();
-
-      return (
-        <Drawer.Navigator initialRouteName="dashboard">
-          <Drawer.Screen name="dashboard" component={Dashboard} />
-          <Drawer.Screen name="commande" component={Commande} />
-          <Drawer.Screen name="preparation" component={Preparation} />
-          <Drawer.Screen name="inventory" component={Inventory} />
-        </Drawer.Navigator>
-      );
-    }
-}
-export default LoginNavigation;
-*/

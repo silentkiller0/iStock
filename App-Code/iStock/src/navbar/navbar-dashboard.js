@@ -13,6 +13,12 @@ export default class NavbarDashboard extends Component {
     return (
       <View style={styles.body}> 
           <Text style={styles.text}>Heelllo</Text>
+          <View>
+            <TouchableOpacity
+              onPress={updateSecureTextEntry}>
+              <Image style={{width: 150, height: 150 }} source={require('../../img/power-off.png')}/>                  
+            </TouchableOpacity>
+          </View>
       </View>
     );
   }

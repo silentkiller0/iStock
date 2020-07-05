@@ -16,14 +16,20 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
-import NavbarDashboard from '../../navbar/navbar-dashboard'
+import LinearGradient from 'react-native-linear-gradient';
+import NavbarDashboard from '../../navbar/navbar-dashboard';
+import MyFooter from '../footers/Footer';
 
 
 export default class Dashboard extends Component {
   render() {
     return (
-      <View style={styles.backgroundColor}>
-        <NavbarDashboard></NavbarDashboard>
+      <LinearGradient
+        start={{x: 0.0, y: 1}} end={{x: 0.5, y: 1}}
+        colors={['#00AAFF', '#706FD3']}
+        style={styles.container}>
+
+        <NavbarDashboard/>
         <View style={styles.mainBody}>
           <Text>
               Dashboard !
@@ -35,21 +41,28 @@ export default class Dashboard extends Component {
               Dashboard !
           </Text>
         </View>
-      </View>
+        <MyFooter/>
+      </LinearGradient>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  backgroundColor: {
-      backgroundColor: "#000",
+  container: {
+    flex: 1,
   },
   mainBody: {
-      backgroundColor: "#fff",
-      borderTopLeftRadius: 25,
-      borderTopRightRadius: 25,
-      padding: 10,
-      height: "100%"
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    height: '70%',
+    width: '100%',
+    position: "absolute",
+    bottom: 60,
   }
 });
 

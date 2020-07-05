@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, Footer, Animated} from  'react-native';
-import MaskedView from '@react-native-community/masked-view';
+import {StyleSheet, View, Text, StatusBar, ImageBackground, Footer, Animated} from  'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import MyFooter from './footers/Footer';
 import {
   Header,
   LearnMoreLinks,
@@ -14,6 +15,7 @@ class Welcome extends Component {
   
   componentDidMount() {
     setTimeout(() => {
+      //this.props.navigation.navigate('loading');
       this.props.navigation.navigate('loading');
     }, 2500);
   }
@@ -21,15 +23,23 @@ class Welcome extends Component {
   render() {
 
     return (
-      <View style={styles.centered}>
-        <View style={styles.body}>
-        <Text style={styles.title_h1}>iStock</Text>
-        </View>
+      <LinearGradient
+        start={{x: 0.0, y: 1}} end={{x: 0.5, y: 1}}
+        colors={['#00AAFF', '#706FD3']}
+        style={styles.bg_image}>
 
-        <View style={styles.footer}>
-          <Text>Created by BDC/JDevs10</Text>
-        </View>
-      </View>
+        <StatusBar translucent={true} backgroundColor={'transparent'} barStyle="light-content"/>
+
+        <ImageBackground
+          source={require('../../img/welcome-v2.3.png')}
+          style={{width: '100%', height: '100%'}}>
+
+            <MyFooter style={styles.footer}/>
+
+        </ImageBackground>
+      </LinearGradient>
+      
+
     );
   }
 }
@@ -37,22 +47,21 @@ class Welcome extends Component {
 const styles = StyleSheet.create({
   centered: {
       flex: 1,
-      backgroundColor: "#00AAFF",
       padding: 10
     },
     body:{
       flex: 1,
       alignItems: "center",
-      justifyContent: "center"
+      justifyContent: "center",
+      width: '100%',
+      height: '100%'
     },
-    title_h1:{
-      fontSize: 50,
-      color: "#ABCDEF",
-      fontWeight: "bold"
+    bg_image:{
+      opacity: 1
     },
-    fotter:{
+    footer:{
       flex: 1,
-      backgroundColor: "#000",
+      color: '#fff'
     }
   });
 
