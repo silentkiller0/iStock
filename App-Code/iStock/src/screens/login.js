@@ -24,8 +24,6 @@ import Users from '../models/Users';
 import Animated from 'react-native-reanimated';
 import { NavigationContainer } from '@react-navigation/native';
 
-{/* <Button title="Login" onPress={() => this.props.navigation.navigate('dashboard')}/>*/}
-
 
 class Login extends React.Component {
   constructor(props){

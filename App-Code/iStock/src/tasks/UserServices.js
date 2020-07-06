@@ -56,7 +56,16 @@ class UserServices extends Component {
                         console.log('Status == 200');
                         console.log(response.data);
 
-                        //navigate to connexion dashbord
+                        //navigate to download
+                        const token_ = {
+                            userName: account.name,
+                            server: account.serverUrl,
+                            token: account.key
+                        };
+                        await AsyncStorage.setItem('token', JSON.stringify(token_));
+                        //const token__ = await AsyncStorage.getItem('token');
+                        //console.log('token__ : ', token__);
+
                         await resolve(true);
                     }else{
                         console.log('Status != 200');
@@ -82,7 +91,7 @@ class UserServices extends Component {
         });
 
         if(result){
-            this.props.navigation.navigate('dashboard');
+            this.props.navigation.navigate('download');
         }
         
     }

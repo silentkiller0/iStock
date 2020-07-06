@@ -6,6 +6,7 @@ import Welcome from '../screens/Welcome';
 import Loading from '../screens/splash/Loading';
 import Login from '../screens/Login';
 import SignIn from '../screens/SignIn';
+import Download from '../screens/splash/Download';
 import Dashboard from '../screens/dashbord-screens/Dashboard';
 
 import Commande from '../screens/dashbord-screens/Commande';
@@ -42,6 +43,7 @@ class RouterNavigation extends Component {
           loading: Loading,
           login: Login,
           signIn: SignIn,
+          download: Download,
           dashboard: DrawerNavigation
         },
         {

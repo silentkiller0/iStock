@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, StatusBar, Text, ImageBackground, Image, AsyncStorage} from  'react-native';
+import {StyleSheet, View, Text, ImageBackground, Image, StatusBar, AsyncStorage} from  'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MyFooter from '../footers/Footer';
 import {
@@ -9,39 +9,30 @@ import {
     DebugInstructions,
     ReloadInstructions,
   } from 'react-native/Libraries/NewAppScreen';
-import FindServers from '../../tasks/FindServers';
   
 
-class Loading extends Component {
+class Download extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      loadingNotify: 'chargement...',
-      isServers: false
+      loadingNotify: 'Initialiser les Téléchargements...',
     };
   }
   
   async componentDidMount() {
-    // setTimeout(() => {
-    //   this.props.navigation.navigate('login');
-    // }, 2500);
 
+    //find the selected company
+    const token_ = await AsyncStorage.getItem('token');
+    const token = JSON.parse(token_);
+    console.log('token : ', token.token);
+    
     setTimeout(() => {
       this.setState({
         ...this.state,
-        loadingNotify: 'Téléchargement des configs du serveur...'
+        loadingNotify: 'Téléchargement des Commandes associer à ' + token_.userName + '...'
     });
     }, 3000);
-
-    const response_data = {
-      isServers: false
-    };
-
-    //check if tocken exist already
-    if(AsyncStorage.getItem('token') != ""){
-      this.props.navigation.navigate('download');
-    }
 
     const server = new FindServers();
     const res = await server.getAllServerUrls().then(async (val) => {
@@ -50,40 +41,40 @@ class Loading extends Component {
       return val;
     });
 
-    // console.log('servers 3 : ');
-    // console.log(res);
-
-    if(res == true){
+    /*
+    const server = new Servers();
+    if(server.getAllServerUrls() == true){
       setTimeout(() => {
         this.props.navigation.navigate('login');
       }, 2500);
     }else{
       alert("Le serveur Big Data Consulting n'est pas joignable...\n");
     }
+    */
   }
 
   render() {
 
     return (
-        <LinearGradient
-          start={{x: 0.0, y: 1}} end={{x: 0.5, y: 1}}
-          colors={['#00AAFF', '#706FD3']}
-          style={styles.body}>
+      <LinearGradient
+        start={{x: 0.0, y: 1}} end={{x: 0.5, y: 1}}
+        colors={['#00AAFF', '#706FD3']}
+        style={styles.body}>
 
-          <StatusBar translucent={true} backgroundColor={'transparent'} barStyle="light-content"/>
+        <StatusBar translucent={true} backgroundColor={'transparent'} barStyle="light-content"/>
 
-          <Image style={{width: 150, height: 150 }} source={require('../../../img/Loading-white.gif')}/>
+        <Image style={{width: 150, height: 150 }} source={require('../../../img/Loading-white.gif')}/>
 
-          <Text style={styles.text}>{this.state.loadingNotify}</Text>
+        <Text style={styles.text}>{this.state.loadingNotify}</Text>
 
-          <MyFooter/>
+        <MyFooter/>
 
-        </LinearGradient>
+      </LinearGradient>
     );
   }
 }
 
-export default Loading;
+export default Download;
 
 const styles = StyleSheet.create({
   centered: {
