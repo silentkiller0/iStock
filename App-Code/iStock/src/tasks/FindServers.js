@@ -2,8 +2,6 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, AsyncStorage } from 'react-native';
 import axios from 'axios';
-import Database from '../Database/Database';
-import Servers from '../Database/models/Servers'
 
 const HOME_URL = "http://82.253.71.109/prod/anexys_v11";
 const HOME_KEY = "Pervk-GTMQw-5qaPR-qMpxx-XfgjQ";
@@ -14,7 +12,6 @@ class FindServers extends Component {
     constructor(props){
         super(props);
         this.state = {
-            db_: new Database(),
             loadingNotify: 'loading...',
         };
     }
@@ -38,22 +35,6 @@ class FindServers extends Component {
                 AsyncStorage.setItem('server_list', JSON.stringify(filtered_data));
                 const servers = await AsyncStorage.getItem('server_list');
                 console.log('server_list : ', servers);
-
-                //open db
-                //console.log('initDB :');
-                //await this.state.db_.initDB();
-
-                //const servers = new Servers();
-                //delete old data
-                //await servers.DELETE_SERVER_LIST();
-
-                //insert
-                //await servers.INSERT_SERVER(filtered_data);
-
-                //close db
-                // await setTimeout(async () => {
-                //    await this.state.db_.closeDatabase();
-                // }, 5000);
 
                 return true;
             }else{

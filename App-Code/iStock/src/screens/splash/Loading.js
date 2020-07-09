@@ -39,8 +39,10 @@ class Loading extends Component {
     };
 
     //check if tocken exist already
-    if(AsyncStorage.getItem('token') != ""){
+    if(await AsyncStorage.getItem('token') != null && await AsyncStorage.getItem('token') != ""){
+      // console.log('smt', await AsyncStorage.getItem('token'));
       this.props.navigation.navigate('download');
+      return;
     }
 
     const server = new FindServers();
@@ -58,7 +60,8 @@ class Loading extends Component {
         this.props.navigation.navigate('login');
       }, 2500);
     }else{
-      alert("Le serveur Big Data Consulting n'est pas joignable...\n");
+      //alert("Le serveur Big Data Consulting n'est pas joignable...\n");
+      this.props.navigation.navigate('dashboard');
     }
   }
 

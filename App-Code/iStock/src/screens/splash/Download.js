@@ -2,13 +2,7 @@ import React, { Component } from 'react';
 import {StyleSheet, View, Text, ImageBackground, Image, StatusBar, AsyncStorage} from  'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MyFooter from '../footers/Footer';
-import {
-    Header,
-    LearnMoreLinks,
-    Colors,
-    DebugInstructions,
-    ReloadInstructions,
-  } from 'react-native/Libraries/NewAppScreen';
+import FindCommandes from '../../tasks/FindCommandes';
   
 
 class Download extends Component {
@@ -34,10 +28,10 @@ class Download extends Component {
     });
     }, 3000);
 
-    const server = new FindServers();
-    const res = await server.getAllServerUrls().then(async (val) => {
-      // console.log('servers 2 : ');
-      // console.log(val);
+    const findCommandes = new FindCommandes();
+    const res = await findCommandes.getAllCommandesFromServer(token).then(async (val) => {
+      console.log('findCommandes.getAllCommandesFromServer : ');
+      console.log(val);
       return val;
     });
 
@@ -51,6 +45,15 @@ class Download extends Component {
       alert("Le serveur Big Data Consulting n'est pas joignable...\n");
     }
     */
+
+   if(res == true){
+      setTimeout(() => {
+        this.props.navigation.navigate('dashboard');
+        return;
+      }, 2500);
+    }else{
+      alert("Le serveur Big Data Consulting n'est pas joignable...\n");
+    }
   }
 
   render() {
