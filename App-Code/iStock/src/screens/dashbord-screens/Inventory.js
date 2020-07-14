@@ -7,44 +7,59 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import LinearGradient from 'react-native-linear-gradient';
+import NavbarDashboard from '../../navbar/navbar-dashboard';
+import MyFooter from '../footers/Footer';
+import InventoryButton from '../dashbord-screens/assets/InventoryButton';
 
 class Inventory extends Component {
   render() {
     return (
-      <View>
-          <Text>Liste de l'inventaire !</Text>
-      </View>
+      <LinearGradient
+        start={{x: 0.0, y: 1}} end={{x: 0.5, y: 1}}
+        colors={['#00AAFF', '#706FD3']}
+        style={styles.container}>
+
+        <NavbarDashboard navigation={ this.props }/>
+        <View style={styles.mainBody}>
+
+          {/* Main twist button */}
+          <InventoryButton navigation={this.props.navigation}/>
+          {/* END Main twist button */}
+
+          <Text>
+              Inventory !
+          </Text>
+          <Text>
+              Inventory !
+          </Text>
+          <Text>
+              Inventory !
+          </Text>
+        </View>
+        <MyFooter/>
+      </LinearGradient>
     );
   }
 }
 
 const styles = StyleSheet.create({
-    scrollView: {
-      backgroundColor: Colors.lighter,
-    },
-    engine: {
-      position: 'absolute',
-      right: 0,
-    },
-    body: {
-      backgroundColor: Colors.white,
-    },
-    sectionTitle: {
-      fontSize: 24,
-      fontWeight: '600',
-      color: Colors.black,
-    },
-    highlight: {
-      fontWeight: '700',
-    },
-    footer: {
-      color: Colors.dark,
-      fontSize: 12,
-      fontWeight: '600',
-      padding: 4,
-      paddingRight: 12,
-      textAlign: 'right',
-    },
-  });
+  container: {
+    flex: 1,
+  },
+  mainBody: {
+    backgroundColor: '#ffffff',
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    borderBottomLeftRadius: 30,
+    borderBottomRightRadius: 30,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
+    height: '60%',
+    width: '100%',
+    position: "absolute",
+    bottom: 60,
+  }
+});
 
 export default Inventory;

@@ -3,6 +3,8 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 
+
+
 // create a component
 class MyFooter extends Component {
     render() {
