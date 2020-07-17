@@ -93,8 +93,7 @@ class InventoryButton extends Component {
                 <Animated.View style={{position: 'relative', left: btn_1X, top: btn_1Y }}>
                     <View style={styles.secondaryButtons}>
                         <TouchableOpacity onPress={this.action_1}>
-                            {/* <FontAwesome name="home" color="#05375a" size={DeviceInfo.isTablet() ? 60 : 30} /> */}
-                            <Text>Back</Text>
+                            <Image style={{width: DeviceInfo.isTablet() ? 50 : 25, height: DeviceInfo.isTablet() ? 80 : 40 }} source={require('../../../../img/return-button-v1.png')}/>
                         </TouchableOpacity>
                     </View>
                 </Animated.View>
@@ -121,7 +120,7 @@ class InventoryButton extends Component {
                     <TouchableOpacity onPress={this.handlePress} underlayColor="#ABCDEF">
                     <Animated.View style={{ transform: [{ rotate: rotation }] }}>
                         {/* <FontAwesome name="plus" color="#05375a" size={75} />  */}
-                        <Image style={{width: DeviceInfo.isTablet() ? 130 : 65 , height: DeviceInfo.isTablet() ? 130 : 65 }} source={require('../../../../img/Logo.png')}/>
+                        <Image style={{width: DeviceInfo.isTablet() ? 100 : 60 , height: DeviceInfo.isTablet() ? 100 : 60 }} source={require('../../../../img/Logo.png')}/>
                     </Animated.View>
                     </TouchableOpacity>
                 </Animated.View>

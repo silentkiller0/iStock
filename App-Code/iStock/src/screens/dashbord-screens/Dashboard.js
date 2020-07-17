@@ -67,7 +67,7 @@ export default class Dashboard extends Component {
         height: this.state.orientation === 'portrait' ? '80%' : '60%',
         width: '100%',
         position: "absolute",
-        bottom: 110,
+        bottom: this.state.orientation === 'portrait' ? "10%" : "20%",
       }
     });
     
@@ -80,33 +80,47 @@ export default class Dashboard extends Component {
 
         <NavbarDashboard navigation={ this.props }/>
         <View style={styles.mainBody}>
+          <ScrollView style={{flex: 1}}>
+            
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
+            <Text>Dashboard !</Text>
 
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
-          <Text>Dashboard !</Text>
+          </ScrollView>
+
           
+          {/* Main twist button */}
+          <MainButton navigation={this.props.navigation}/>
+          {/* END Main twist button */}
         </View>
-        {/* Main twist button */}
-        <MainButton navigation={this.props.navigation}/>
-        {/* END Main twist button */}
         <MyFooter/>
       </LinearGradient>
     );

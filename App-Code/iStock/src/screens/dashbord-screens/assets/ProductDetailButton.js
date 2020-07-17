@@ -1,19 +1,16 @@
 import React, { Component } from 'react';
-import {StyleSheet, View, Text, Image, TouchableHighlight, Animated} from 'react-native';
+import {StyleSheet, View, Text, Image, TouchableHighlight, Animated, Alert} from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import DeviceInfo from 'react-native-device-info';
 
-export default class MainButton extends Component {
-    constructor(props){
-        super(props);
-    }
-
-    
-  componentDidMount(){
-    //console.log('MainButton', this.props);
+export default class ProductDetailButton extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+    };
   }
-  
+
     buttonSize = new Animated.Value(1);
     mode = new Animated.Value(0);
 
@@ -21,7 +18,7 @@ export default class MainButton extends Component {
         Animated.sequence([
         Animated.timing(this.buttonSize, {
             toValue: 0.95,
-            duration: 50,
+            duration: 100,
             useNativeDriver: false
         }),
         Animated.timing(this.buttonSize, {
@@ -47,22 +44,19 @@ export default class MainButton extends Component {
         ]).start();
     }
 
-    navigateTo_cmd = () => {
-        console.log('Commande');
-        this.props.navigation.navigate("Commande");
+    action_1 = () => {
+        console.log('action_1');
+        this.props.navigation.goBack()
         this.default__();
     }
-    navigateTo_ppt = () => {
-        console.log('Preparation');
-        this.props.navigation.navigate("Preparation");
+    action_2 = () => {
+        console.log('action_2');
         this.default__();
     }
-    navigateTo_ity = () => {
-        console.log('Inventory');
-        this.props.navigation.navigate("Inventory");
+    action_3 = () => {
+        console.log('action_3');
         this.default__();
     }
-    
 
   render() {
     const sizeStyle = {
@@ -104,33 +98,30 @@ export default class MainButton extends Component {
         outputRange: [DeviceInfo.isTablet() ? 20 : 0, DeviceInfo.isTablet() ? -50 : -25]
     });
 
-
     return (
         <View style={{position: 'relative', alignItems: 'center'}}>
 
             <Animated.View style={{position: 'relative', left: btn_1X, top: btn_1Y }}>
                 <View style={styles.secondaryButtons}>
-                    <TouchableOpacity onPress={this.navigateTo_cmd}>
-                        {/* <FontAwesome name="home" color="#05375a" size={DeviceInfo.isTablet() ? 60 : 30} /> */}
-                        <Text>Commande</Text>
+                    <TouchableOpacity onPress={this.action_1}>
+                    <Image style={{width: DeviceInfo.isTablet() ? 50 : 25, height: DeviceInfo.isTablet() ? 80 : 40 }} source={require('../../../../img/return-button-v1.png')}/>
                     </TouchableOpacity>
                 </View>
             </Animated.View>
 
             <Animated.View style={{position: 'relative', left: btn_2X, top: btn_2Y }}>
                 <View style={styles.secondaryButtons}>
-                    <TouchableOpacity onPress={this.navigateTo_ppt}>
-                        {/* <FontAwesome name="home" color="#05375a" size={DeviceInfo.isTablet() ? 60 : 30} /> */}
-                        <Text>préparation</Text>
+                    <TouchableOpacity onPress={this.action_2}>
+                        <Image style={{width: DeviceInfo.isTablet() ? 60 : 40, height: DeviceInfo.isTablet() ? 60 : 40 }} source={require('../../../../img/save-white.png')}/>
                     </TouchableOpacity>
                 </View>
             </Animated.View>
             <Animated.View style={{position: 'relative', left: btn_3X, top: btn_3Y }}>
                 <View style={styles.secondaryButtons}>
-                    <TouchableOpacity onPress={this.navigateTo_ity}>
+                    <TouchableOpacity onPress={this.action_3}>
                         {/* <FontAwesome name="key" color="#05375a" size={60} />  */}
-                        {/* <Image style={{width: DeviceInfo.isTablet() ? 60 : 30, height: DeviceInfo.isTablet() ? 60 : 30 }} source={require('../../../../img/power-off.png')}/> */}
-                        <Text>inventory</Text>
+                        <Image style={{width: DeviceInfo.isTablet() ? 60 : 40, height: DeviceInfo.isTablet() ? 60 : 40 }} source={require('../../../../img/Barre-Code.png')}/>
+                        {/* <Text>inventory</Text> */}
                     </TouchableOpacity>
                 </View>
             </Animated.View>

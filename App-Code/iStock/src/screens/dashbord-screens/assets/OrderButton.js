@@ -112,8 +112,7 @@ export default class OrderButton extends Component {
             <Animated.View style={{position: 'relative', left: btn_1X, top: btn_1Y }}>
                 <View style={styles.secondaryButtons}>
                     <TouchableOpacity onPress={this.action_1}>
-                        {/* <FontAwesome name="home" color="#05375a" size={DeviceInfo.isTablet() ? 60 : 30} /> */}
-                        <Text>Back</Text>
+                    <Image style={{width: DeviceInfo.isTablet() ? 50 : 25, height: DeviceInfo.isTablet() ? 80 : 40 }} source={require('../../../../img/return-button-v1.png')}/>
                     </TouchableOpacity>
                 </View>
             </Animated.View>
@@ -121,7 +120,7 @@ export default class OrderButton extends Component {
             <Animated.View style={{position: 'relative', left: btn_2X, top: btn_2Y }}>
                 <View style={styles.secondaryButtons}>
                     <TouchableOpacity onPress={this.action_2}>
-                        <Image style={{width: DeviceInfo.isTablet() ? 60 : 30, height: DeviceInfo.isTablet() ? 60 : 30 }} source={require('../../../../img/plus-white.png')}/>
+                        <Image style={{width: DeviceInfo.isTablet() ? 60 : 40, height: DeviceInfo.isTablet() ? 60 : 40 }} source={require('../../../../img/plus-white.png')}/>
                     </TouchableOpacity>
                 </View>
             </Animated.View>
@@ -129,7 +128,7 @@ export default class OrderButton extends Component {
                 <View style={styles.secondaryButtons}>
                     <TouchableOpacity onPress={this.action_3}>
                         {/* <FontAwesome name="key" color="#05375a" size={60} />  */}
-                        <Image style={{width: DeviceInfo.isTablet() ? 100 : 30, height: DeviceInfo.isTablet() ? 100 : 30 }} source={require('../../../../img/Info.png')}/>
+                        <Image style={{width: DeviceInfo.isTablet() ? 60 : 40, height: DeviceInfo.isTablet() ? 60 : 40 }} source={require('../../../../img/Info.png')}/>
                         {/* <Text>inventory</Text> */}
                     </TouchableOpacity>
                 </View>
@@ -139,7 +138,7 @@ export default class OrderButton extends Component {
                 <TouchableOpacity onPress={this.handlePress} underlayColor="#ABCDEF">
                 <Animated.View style={{ transform: [{ rotate: rotation }] }}>
                     {/* <FontAwesome name="plus" color="#05375a" size={75} />  */}
-                    <Image style={{width: DeviceInfo.isTablet() ? 130 : 65 , height: DeviceInfo.isTablet() ? 130 : 65 }} source={require('../../../../img/Logo.png')}/>
+                    <Image style={{width: DeviceInfo.isTablet() ? 100 : 60 , height: DeviceInfo.isTablet() ? 100 : 60 }} source={require('../../../../img/Logo.png')}/>
                 </Animated.View>
                 </TouchableOpacity>
             </Animated.View>
@@ -157,7 +156,7 @@ const styles = StyleSheet.create({
         width: DeviceInfo.isTablet() ? 125 : 62,
         borderRadius: DeviceInfo.isTablet() ? 60 : 30,
         position: "absolute",
-        top: DeviceInfo.isTablet() ? 790 : '100%',
+        bottom: DeviceInfo.isTablet() ? -100 : 0,
         shadowColor: "#000",
         shadowRadius: 5,
         shadowOffset: {height: 10},
@@ -168,7 +167,7 @@ const styles = StyleSheet.create({
     secondaryButtons: {
         width: 10, height: 10,
         position: "absolute",
-        top: DeviceInfo.isTablet() ? 790 : '100%',
+        bottom: DeviceInfo.isTablet() ? -80 : 0,
         alignItems: "center",
         justifyContent: "center",
         width: DeviceInfo.isTablet() ? 100 : 50,
