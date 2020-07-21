@@ -55,8 +55,9 @@ class Commande extends Component {
   }
 
   _Showcommande = (value) => {
-    // alert('Obj: \n' + JSON.stringify(value));
     console.log(value);
+    // alert('Obj: \n' + JSON.stringify(value));
+    this.props.navigation.navigate("CommandeDetails", {order: value});
   }
 
 

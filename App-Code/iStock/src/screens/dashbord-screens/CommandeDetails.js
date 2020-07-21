@@ -1,7 +1,9 @@
 //import liraries
 import React, { Component } from 'react';
+import CardView from 'react-native-cardview';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import {StyleSheet, ScrollView, TouchableOpacity, View, Text, FlatList, Image, Dimensions, Alert, ImageBackground} from  'react-native';
-import { Card, Button, Icon } from 'react-native-elements'
+import { Card, Button } from 'react-native-elements'
 import LinearGradient from 'react-native-linear-gradient';
 import NavbarDashboard from '../../navbar/navbar-dashboard';
 import MyFooter from '../footers/Footer';
@@ -42,7 +44,7 @@ class CommandeDetails extends Component {
     }
 
     productDetails = (value) => {
-      alert('Obj: \n' + JSON.stringify(value));
+      // alert('Obj: \n' + JSON.stringify(value));
       this.props.navigation.navigate("ProductDetails", {product: value});
     }
 
@@ -79,27 +81,53 @@ class CommandeDetails extends Component {
               position: "absolute",
               bottom: this.state.orientation === 'portrait' ? "10%" : "20%",
             },
-            listItemBody: {
-              flexDirection: "row",
-              height: "auto",
-              width: '100%', 
-              // borderWidth: 2,
-              // borderRadius: 10,
-              // borderColor: '#777777',
-              padding: 10,
-              marginBottom: 20,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 10,
-                height: 15,
-              },
-              shadowOpacity: 0.66,
-              shadowRadius: 20,
-              elevation: 10,
+            cardViewStyle: {
+              width: '95%',
+              height: 150,
+              margin: 10,
+              // marginBottom: 20,
             },
-            listItemBody_layout: {
-              //flex: 1,
-              flexDirection: "row",
+            cardViewStyle1: {
+              paddingTop: 10,
+              alignItems: 'center',
+              flexDirection: 'row',
+              width: '95%',
+              //height: 150,
+            },
+            article: {
+              //alignItems: 'center',
+              margin: 20,
+              width: '100%'
+            },
+            ic_and_details: {
+              flexDirection: 'row',
+              margin: 3,
+              //alignItems: 'center',
+            },
+            aname: {
+              width: '60%',
+            },
+            articlename: {
+              color: '#00AAFF',
+              fontSize: 20,
+              //marginBottom: 15,
+            },
+            aref: {
+              width: '40%',
+            },
+            ref: {
+              fontSize: 15
+            },
+            iconDetails: {
+              marginRight: 10,
+              color: '#00AAFF',
+            },
+            pricedetails: {
+              flexDirection: 'row',
+              width: '100%',
+            },
+            price: {
+              width: '75%',
             },
         });
       
@@ -115,21 +143,45 @@ class CommandeDetails extends Component {
 
                 <ScrollView style={{flex: 1}}>
                 {
-                    order.lines.map((item) => (
+                    order.lines.map((item, index) => (
                       <TouchableOpacity onPress={() => this.productDetails(item)}>
-                        <View style={styles.listItemBody}>
-                            <View style={{flex: 1}}>
-                                {/* <Text>- {item.img} -</Text> */}
-                                <Image style={{width: DeviceInfo.isTablet() ? 60 : 50, height: DeviceInfo.isTablet() ? 60 : 50}} source={require('../../../img/no_image.jpeg')}/> 
+
+                        <CardView key={index} cardElevation={10} cornerRadius={5} style={styles.cardViewStyle}>
+                          <View style={styles.cardViewStyle1}>
+                            <View style={[styles.article, {flexDirection: "row"}]}>
+                              <View>
+                                <Image style={{width: DeviceInfo.isTablet() ? 100 : 50, height: DeviceInfo.isTablet() ? 100 : 50}} source={require('../../../img/no_image.jpeg')}/>
+                              </View>
+                              <View style={{flex: 1, marginLeft: 10}}>
+                              <View style={styles.ic_and_details}>
+                                <View style={styles.aname}>
+                                <Text style={styles.articlename}>{item.name}</Text>
+                                </View>
+                                <View style={styles.aref}>
+                                  <Text style={styles.ref}>{item.ref}</Text>
+                                </View>
+                              </View>
+                              <View style={styles.ic_and_details}>
+                                <Icon name="boxes" size={15} style={styles.iconDetails} />
+                                <Text> XXX Produit(s)</Text>
+                              </View>
+
+                              <View style={{ borderBottomColor: '#00AAFF', borderBottomWidth: 1, marginRight: 10 }} />
+
+                              <View style={styles.pricedetails}>
+                                <View style={styles.price}>
+                                  <Text>Total TTC : {item.prixTotalTTC > 0 ? (parseFloat(item.prixTotalTTC)).toFixed(2) : '0'} €</Text>
+                                </View>
+                                {/* <View style={styles.billedstate}>
+                                  {item.etat === 0 ? (<Text style={styles.billedtext_no}>Non Validé</Text>) : (<Text style={styles.billedtext_ok}>Validé</Text>)}
+                                </View> */}
+                              </View>
+                              </View>
+                              
                             </View>
-                            <View style={{flex: 2}}>
-                                <Text>{item.ref}</Text>
-                                <Text>{item.name}</Text>
-                            </View>
-                            <View>
-                                <Text>{item.prixTTC}</Text>
-                            </View>
-                        </View>
+                          </View>
+                        </CardView>
+
                       </TouchableOpacity>
                     ))
                 }
