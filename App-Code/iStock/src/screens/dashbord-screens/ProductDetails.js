@@ -32,7 +32,8 @@ class ProductDetails extends Component {
         };
     
         this.state = {
-          orientation: isPortrait() ? 'portrait' : 'landscape'
+          orientation: isPortrait() ? 'portrait' : 'landscape',
+          qte_cmd: 1
         };
         
         // Event Listener for orientation changes
@@ -172,14 +173,19 @@ class ProductDetails extends Component {
                       </View>
                     </CardView>
 
-                    <Text style={{marginTop: 50, marginLeft: 10, fontSize: 20, fontWeight: "bold"}}>Produit</Text>
+                    <Text style={{marginTop: 50, marginLeft: 10, fontSize: 25, fontWeight: "bold"}}>Produit</Text>
 
                     <CardView cardElevation={10} cornerRadius={5} style={styles.cardViewStyle}>
-                      <View style={styles.cardViewStyle1}>
-                        <View style={[styles.article, {flexDirection: "row", borderColor: "#ABCDEF", borderWidth: 1, borderRadius: 10, padding: 5}]}>
-                          <Image style={{flex: 1, width: DeviceInfo.isTablet() ? 30 : 20, height: DeviceInfo.isTablet() ? 30 : 20}} source={require('../../../img/no_image.jpeg')}/>
-                          <Text style={{flex: 6, }}>Qte commande </Text>
-                          <Image style={{flex: 1, width: DeviceInfo.isTablet() ? 30 : 20, height: DeviceInfo.isTablet() ? 30 : 20}} source={require('../../../img/no_image.jpeg')}/>
+                      <View>
+                        <Text style={{marginTop: 15, marginLeft: 20, fontWeight: "bold", fontSize: 18}}>Qte commande - {this.state.qte_cmd}</Text>
+                        <View style={{marginTop: 10, marginLeft: 20, marginRight: 20, flexDirection: "row", borderColor: "#ABCDEF", borderWidth: 1, borderRadius: 10, padding: 5}}>
+                          <TouchableOpacity onPress={() => this.setState({...this.state,qte_cmd: (this.state.qte_cmd > 1 ? this.state.qte_cmd - 1 : 0)})}>
+                            <Image style={{flex: 1, width: DeviceInfo.isTablet() ? 30 : 20, height: DeviceInfo.isTablet() ? 30 : 20}} source={require('../../../img/minus.png')}/>
+                          </TouchableOpacity>
+                          <Text style={{flex: 15, }}>Qte commande - {this.state.qte_cmd}</Text>
+                          <TouchableOpacity onPress={() => this.setState({...this.state,qte_cmd: this.state.qte_cmd + 1})}>
+                            <Image style={{flex: 1, width: DeviceInfo.isTablet() ? 30 : 20, height: DeviceInfo.isTablet() ? 30 : 20}} source={require('../../../img/black-plus.png')}/>
+                          </TouchableOpacity>
                         </View>
                       </View>
                     </CardView>
