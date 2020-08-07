@@ -41,7 +41,6 @@ export default class NavbarDashboard extends Component {
     });
   }
 
-  /*
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.existPressed);
   }
@@ -49,7 +48,6 @@ export default class NavbarDashboard extends Component {
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress', this.existPressed);
   }
-  */
   
   existPressed = () => {
     Alert.alert(
@@ -81,10 +79,7 @@ export default class NavbarDashboard extends Component {
     }
 
     const disconnect = () => {
-      // const navigate = this.props.navigation;
-      // console.log(navigate);
-      // navigate.navigation.navigate('commande');
-      //this.existPressed();
+      this.existPressed();
     }
 
 

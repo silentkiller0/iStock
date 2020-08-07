@@ -2,6 +2,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, AsyncStorage } from 'react-native';
 import axios from 'axios';
+import ServerManagement from '../Database/Managers/ServerManagement';
 
 const HOME_URL = "http://82.253.71.109/prod/anexys_v11";
 const HOME_KEY = "Pervk-GTMQw-5qaPR-qMpxx-XfgjQ";
@@ -24,6 +25,8 @@ class FindServers extends Component {
                 console.log('Status == 200');
 
                 const filtered_data = [];
+
+                console.log("Data : ", response.data);
                 
                 for(let x=0; x < response.data.length; x++){
                     filtered_data[x] = {name: response.data[x].name, url: response.data[x].url};
@@ -32,6 +35,12 @@ class FindServers extends Component {
                 console.log('data :');
                 console.log(filtered_data);
 
+                //Sava data in db
+                const sm = new ServerManagement();
+                const res_1 = await sm.CREATE_SERVER_TABLE();
+                const res_2 = await sm.INSERT_SERVER_L(filtered_data);
+
+                //Save data in storage
                 AsyncStorage.setItem('server_list', JSON.stringify(filtered_data));
                 const servers = await AsyncStorage.getItem('server_list');
                 console.log('server_list : ', servers);

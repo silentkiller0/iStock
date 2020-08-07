@@ -24,7 +24,7 @@ class Download extends Component {
     setTimeout(() => {
       this.setState({
         ...this.state,
-        loadingNotify: 'Téléchargement des Commandes associer à ' + token_.userName + '...'
+        loadingNotify: 'Téléchargement des Commandes associer à ' + token.userName + '...'
     });
     }, 3000);
 

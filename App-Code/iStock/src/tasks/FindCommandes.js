@@ -18,38 +18,74 @@ export default class FindCommandes extends Component {
     await db.transaction(async function (txn) {
       await txn.executeSql('DROP TABLE IF EXISTS commandes', []);
       await txn.executeSql(
-          'CREATE TABLE IF NOT EXISTS commandes(id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(100), country VARCHAR(100),code_pays VARCHAR(100), town VARCHAR(100), zip VARCHAR(100), address VARCHAR(100), phone VARCHAR(100), fax VARCHAR(100), email VARCHAR(100), skype VARCHAR(100), url VARCHAR(100), idprof1 VARCHAR(100), idprof2 VARCHAR(100), idprof3 VARCHAR(100), idprof4 VARCHAR(100), note VARCHAR(255), code_client VARCHAR(100), code_fournisseur VARCHAR(100),ref VARCHAR(100))',
+          'CREATE TABLE IF NOT EXISTS commandes(id INTEGER PRIMARY KEY AUTOINCREMENT, ref_client INT(10),ref_commande VARCHAR(255),date_creation VARCHAR(255),date_livraison VARCHAR(255),mode_reglement VARCHAR(255),acompte VARCHAR(255),remise_commande VARCHAR(255),note_privee VARCHAR(255),total_ht VARCHAR(255),total_ttc VARCHAR(255),total_tva VARCHAR(50), statut INT(2),billed INT(2),isnew INT(2), issent INT(2))',
           []
       );
-      console.log('table created');
+      console.log("table 'commandes' Created/Existe ");
+
+      //##### Ligne CMD #####################################################################
+      await txn.executeSql('DROP TABLE IF EXISTS commandes_produits', []);
+      await txn.executeSql(
+          'CREATE TABLE IF NOT EXISTS commandes_produits(id INTEGER PRIMARY KEY AUTOINCREMENT, label VARCHAR(255), ref_produit VARCHAR(100), qt INT(10),price VARCHAR(100),price_ttc VARCHAR(100),tva VARCHAR(100),type_commande VARCHAR(2),remise_produit VARCHAR(20), id_commandes_client INT(10),pvu VARCHAR(20))',
+          []
+      );
+      console.log("table 'commandes_produits' Created/Existe ");
+
     });
   }
 
   async getAllCommandesFromServer(token){
+    this.checkTable();
+
     //const token = await AsyncStorage.getItem('token');
     console.log('FindCommandes', 'getAllCommandesFromServer()');
     console.log('token', token);
 
-    return await axios.get(`${token.server}/api/index.php/orders?sortfield=t.rowid&sortorder=ASC&limit=100`, 
+    let i_ = 0;
+    let ind = 0;
+
+    return await new Promise(async (resolve)=> {
+      while(i_ < 10){
+        await axios.get(`${token.server}/api/index.php/orders?sortfield=t.rowid&sortorder=ASC&limit=50&page=${i_}`, 
             { headers: { 'DOLAPIKEY': token.token, 'Accept': 'application/json' } })
         .then(async (response) => {
             if(response.status == 200){
                 console.log('Status == 200');
                 console.log(response.data);
 
-                return true;
+
+                i_++;
             }else{
                 console.log('Status != 200');
                 console.log(response.data);
-                return false;
             }
+
         }).catch(async (error) => {
             // handle error
-            console.log('error 1 : ');
-            console.log(error);
-            console.log(error.response.request._response);
-            return false;
+            console.log('error : ', error);
+            if (error.response.status === 404) {
+              ind += 1;
+              if (ind === 1) {
+                  i_ = 11;
+                  console.log('Le telechargement des commandes est finis');
+                  await resolve(true);
+              }
+              await resolve(false);
+            }
+            await resolve(false);
         });
+      }
+    });
+  }
+
+  async saveInDatabase(orderList){
+    for(let index = 0; index<orderList.length; index++){
+      await txn.executeSql(
+        "INSERT INTO commandes('id', 'name', 'country', 'code_pays', 'town', 'zip', 'address', 'phone', 'fax', 'email', 'skype', 'url', 'idprof1', 'idprof2', 'idprof3','idprof4', 'note', 'code_client', 'code_fournisseur', 'ref') "+
+        "VALUE()",
+        []
+      );
+    }
   }
 
   render() {

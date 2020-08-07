@@ -63,25 +63,25 @@ class Commande extends Component {
 
   render() {
     const test_cmd_list = [
-      {id: 1, name: "Test Panier 1", prixTotalTTC: 154, user: "JL", client: "Client A", ref: "PROV-00000001", creationDate: "10-05-2020", etat: 0, lines: [
+      {id: 1, name: "Commande 1", prixTotalTTC: 154, user: "JL", client: "Client A", ref: "PROV-00000001", creationDate: "10-05-2020", etat: 0, lines: [
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 1", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 2", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 3", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}
       ]},
-      {id: 2, name: "Test Panier 2", prixTotalTTC: 241, user: "Amine", client: "Client B", ref: "PROV-00000003", creationDate: "05-05-2020", etat: 1, lines: [
+      {id: 2, name: "Commande 2", prixTotalTTC: 241, user: "Amine", client: "Client B", ref: "CMD-00000003", creationDate: "05-05-2020", etat: 1, lines: [
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 1", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 2", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 3", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"},
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 4", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}
       ]},
-      {id: 3, name: "Test Panier 3", prixTotalTTC: 114, user: "Ilias", client: "Client C", ref: "PROV-00009142", creationDate: "11-05-2020", etat: 0, lines: [
+      {id: 3, name: "Commande 3", prixTotalTTC: 114, user: "Ilias", client: "Client C", ref: "PROV-00009142", creationDate: "11-05-2020", etat: 0, lines: [
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 1", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
       ]},
-      {id: 4, name: "Test Panier 4", prixTotalTTC: 325, user: "Fahd", client: "Client D", ref: "PROV-09999999", creationDate: "01-04-2020", etat: 1, lines: [
+      {id: 4, name: "Commande 4", prixTotalTTC: 325, user: "Fahd", client: "Client D", ref: "CMD-09999999", creationDate: "01-04-2020", etat: 1, lines: [
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 1", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 2", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
       ]},
-      {id: 5, name: "Test Panier 5", prixTotalTTC: 999, user: "Admin", client: "Client E", ref: "PROV-12345678", creationDate: "9-07-2020", etat: 0, lines: [
+      {id: 5, name: "Commande 5", prixTotalTTC: 999, user: "Admin", client: "Client E", ref: "PROV-12345678", creationDate: "9-07-2020", etat: 0, lines: [
         {img: "../../../img/no_image.jpeg", ref: "0299431", name: "Article 1", qte: 3, prixHT: 50, prixTTC: 51.3, remise: "0%"}, 
       ]}
     ];
@@ -218,25 +218,13 @@ class Commande extends Component {
           <ScrollView style={{flex: 1}}>
           {
             test_cmd_list.map((item, index) => (
-              <TouchableOpacity onPress={() => this.orderDetails(item)}>
+              <View>
+                {item.etat === 0 ? 
+                  null
+                : 
+                <TouchableOpacity onPress={() => this.orderDetails(item)}>
 
-                {/* <CardView key={index} cardElevation={7} cornerRadius={5} style={styles.cardViewStyle}>
-                  <View style={styles.cardViewStyle1}>
-                    <View style={styles.listItemBody}>
-                      <View style={styles.listItemBody_layout}>
-                        <Text style={{flex: 1, height: 70, fontWeight: 'bold', fontSize: 25}}>{item.name}</Text>
-                        <Text>{item.prixTotalTTC} TTC</Text>
-                      </View>
-
-                      <View style={styles.listItemBody_layout}>
-                        <Text style={{flex: 1,}}>{item.user}</Text>
-                        <Text style={{fontSize: 20}}>{item.ref}</Text>
-                      </View>
-                    </View>
-                  </View>
-                </CardView> */}
-
-                <CardView key={index} cardElevation={10} cornerRadius={5} style={styles.cardViewStyle}>
+                  <CardView key={index} cardElevation={10} cornerRadius={5} style={styles.cardViewStyle}>
                     <View style={styles.cardViewStyle1}>
                         <View style={styles.order}>
                             <TouchableOpacity onPress={() => this._Showcommande(item)}>
@@ -266,7 +254,7 @@ class Commande extends Component {
                                 <Text>Total TTC : {item.prixTotalTTC > 0 ? (parseFloat(item.prixTotalTTC)).toFixed(2) : '0'} €</Text>
                                 </View>
                                 <View style={styles.billedstate}>
-                                {item.etat === 0 ? (<Text style={styles.billedtext_no}>Non Validé</Text>) : (<Text style={styles.billedtext_ok}>Validé</Text>)}
+                                {item.etat === 0 ? (<Text style={styles.billedtext_no}>Brouillon</Text>) : (<Text style={styles.billedtext_ok}>Validé</Text>)}
                                 </View>
                             </View>
                             </TouchableOpacity>
@@ -279,9 +267,11 @@ class Commande extends Component {
                             </View>
                         </View>
                     </View>
-                </CardView>
+                  </CardView>
 
-              </TouchableOpacity>
+                </TouchableOpacity>
+                }
+              </View>
             ))
           }
 

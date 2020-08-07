@@ -3,8 +3,6 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { View, Text, StyleSheet, Platform, AsyncStorage } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
-import Database from '../Database/Database';
-import Servers from '../Database/models/Servers';
 
 // create a component
 class UserServices extends Component {
@@ -58,13 +56,13 @@ class UserServices extends Component {
 
                         //navigate to download
                         const token_ = {
-                            userName: account.name,
+                            userName: response.data.success.identifiant,
                             server: account.serverUrl,
                             token: account.key
                         };
                         await AsyncStorage.setItem('token', JSON.stringify(token_));
                         //const token__ = await AsyncStorage.getItem('token');
-                        //console.log('token__ : ', token__);
+                        console.log('token_ : ', token_);
 
                         await resolve(true);
                     }else{
