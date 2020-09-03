@@ -50,7 +50,8 @@ $langs->loadLangs(array("admin", "istock@istock"));
 if (!$user->admin) accessforbidden();
 
 // Parameters
-$action = GETPOST('action', 'alpha');
+$action_1 = GETPOST('action_1', 'alpha');
+$action_2 = GETPOST('action_2', 'alpha');
 $backtopage = GETPOST('backtopage', 'alpha');
 
 /*
@@ -67,28 +68,12 @@ $arrayofparameters = array(
 	'hhh' =>array('css'=>'minwidth200', 'enabled'=>1)
 );
 
-// get the values from the db
-$sql = "SELECT * FROM llx_istock_configuration where rowid = 1";
-$res = $db->query($sql);
-
-//print("<pre>".print_r($res,true)."</pre>");
-
-
-if ($res->num_rows > 0) {
-	$row = $db->fetch_array($sql);
-	
-	//print("<pre>".print_r($row,true)."</pre>");
-
-	$ISTOCK_AUTO_CREATION = $row['auto_creation'];
-
-}else{
-	
-	$ISTOCK_AUTO_CREATION = 'Nothing...';
+if( !file_exists('../backend/config_management.php') &&
+	!file_exists('../backend/load_config_data.php')){
+	die("[ERREUR::1001] => échec du chargement des fichiers!");
 }
-
-
-//print("<pre>".print_r($modIStock->const[1],true)."</pre>");
-//die();
+include ('../backend/load_config_data.php');
+include ('../backend/config_management.php');
 
 /*
  * Actions
@@ -121,68 +106,97 @@ dol_fiche_head($head, 'settings', '', -1, "istock@istock");
 // echo '<span class="opacitymedium">'.$langs->trans("IStockSetupPage").'</span><br><br>';
 
 
-if ($action == 'update')
-{
-	
-	if($_POST['auto_count_creation'] != 'true' && $_POST['auto_count_creation'] != 'false'){
-		?>
-		<script>
-			alert("La valeur de 'création des comptes en automatique' n'est pas respecté !\nVeuillez renseigner 'true' ou 'false' dans ce champ.");
-		</script>
-		<?php
-
-	}else{
-		//print("<pre>".print_r($_POST,true)."</pre>");
-		$ISTOCK_AUTO_CREATION = $_POST['auto_count_creation'];
-	
-		if ($res->num_rows == 0) {
-			
-			//If first insert or no values in Database
-			$sql = "INSERT INTO llx_istock_configuration (rowid, auto_creation) VALUES(1, '".$ISTOCK_AUTO_CREATION."')";
-			$db->query($sql);
-
-		}else{
-			//Update values in Database
-			$sql = "UPDATE llx_istock_configuration SET auto_creation='".$ISTOCK_AUTO_CREATION."' WHERE rowid = 1";
-			$res = $db->query($sql);
-		}
-		
-		$db->commit();
-		header("location:setup.php");
-	}
-
-}
-
+if($ISTOCK_KEY == ""){
 ?>
+
+<form id="form_istock_key" name="form_istock_key" method="POST" action="setup.php">
+	<h3>Création de la clé lience : </h3>
+	<div style="display: flex;">
+		<input type="hidden" name="action_1" value="update">
+		<input type="hidden" name="action_2" value="add_key">
+		<input id="form_istock_key_input" style="margin-right: 20px; width: 250px;" type="text" name="istock_key" maxlength="29" placeholder="Ex: xxxxx-xxxxx-xxxxx-xxxxx-xxxxx" value="<?php print $ISTOCK_KEY; ?>"/>
+		<div class="maj_const _g__" style="margin-left: 20px;" onclick="generateKey()">Générer</div>
+	</div>
+	<br>
+	<br>
+	<br>
+	<div class="maj_const _a__" onclick="document.getElementById('form_istock_key').submit()">Ajouter</div>
+
+</form>
+<br>
+<br>
+<br>
+<script>
+	function generateKey(){
+		$.get("../backend/generate_key.php",function(data, status){
+			if(status == 'success'){
+				const input = document.getElementById('form_istock_key_input');
+				input.value = data;
+			}else{
+				alert("Status: " + status + "\nErreur de la génération d'une clé licence.");
+			}
+		});
+	}
+</script>
+<?php }else{ ?>
+	<form id="form_istock_key_d" name="form_istock_key_d" method="POST" action="setup.php">
+	
+		<h3>La clé lience : </h3>
+		<div style="display: flex;">
+			<input type="hidden" name="action_1" value="update">
+			<input type="hidden" name="action_2" value="delete_key">
+			<input style="margin-right: 20px; width: 250px;" type="text" name="istock_key_d" maxlength="29" value="<?php print $ISTOCK_KEY ?>" readonly="readonly"/>
+			<div class="maj_const _d__" style="margin-left: 20px;" onclick="document.getElementById('form_istock_key_d').submit()">Supprimer</div>
+		</div>
+		
+	</form>
+	<br>
+	<br>
+	<br>
+<?php } ?>
 
 <form id="form_istock" name="form_istock" method="POST" action="setup.php">
 	
-	<input type="hidden" name="action" value="update">
+	<input type="hidden" name="action_1" value="update">
+	<input type="hidden" name="action_2" value="update_account_creation">
 	<h3>Autoriser la création des comptes en automatique : </h3>
 	<input type="text" name="auto_count_creation" maxlength="5" value="<?php print $ISTOCK_AUTO_CREATION ?>"/>
-
 	<br>
 	<br>
 	<br>
-	<div id="maj_const" onclick="document.getElementById('form_istock').submit()">Update</div>
+	<div class="maj_const _u__" onclick="document.getElementById('form_istock').submit()">Update</div>
 
 </form>
 
 <style>
-#maj_const{
+.maj_const{
 	border: 1px solid black;
 	width: 100px;
 	text-align: center;
 	padding: 7px 0px;
 	font-size: 15px;
-	font-weight: bold;
-	background: #306da0;
 	text-shadow: 1px 1px 1px black;
 	color: white;
 	cursor: pointer;
 	transition:0.2s ease;
 }
-#maj_const:hover{
+._g__{
+	background: #585858;
+	font-weight: bold;
+}
+._a__{
+	background: #306da0;
+	font-weight: bold;
+}
+._u__{
+	background: #306da0;
+	font-weight: bold;
+}
+._d__{
+	background: #FF0000;
+	font-weight: bold;
+}
+.maj_const:hover{
 	opacity:0.7;
 }
 </style>

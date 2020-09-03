@@ -98,7 +98,7 @@ class Authentification extends CommonObject
 		'last_connexion' => array('type'=>'datetime', 'label'=>'LastConnexion', 'enabled'=>1, 'position'=>5, 'notnull'=>1, 'visible'=>1,),
 		'device_platform' => array('type'=>'varchar(255)', 'label'=>'DevicePlatform', 'enabled'=>1, 'position'=>6, 'notnull'=>-1, 'visible'=>0,),
 		'device_type' => array('type'=>'varchar(255)', 'label'=>'DeviceType', 'enabled'=>1, 'position'=>7, 'notnull'=>-1, 'visible'=>0,),
-		'fk_user' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'Utilisateur', 'enabled'=>1, 'position'=>9, 'notnull'=>1, 'visible'=>1,),
+		'fk_user' => array('type'=>'integer:User:user/class/user.class.php', 'label'=>'Utilisateur', 'enabled'=>1, 'position'=>8, 'notnull'=>1, 'visible'=>1,),
 	);
 	public $rowid;
 	public $date_creation;
