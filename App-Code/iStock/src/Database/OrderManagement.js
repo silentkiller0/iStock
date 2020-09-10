@@ -112,4 +112,4 @@ class OrderManagement extends Component {
 }
 
 //make this component available to the app
-export default OrderManagement;
+export default OrderManager;
