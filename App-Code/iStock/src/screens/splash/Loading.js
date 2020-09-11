@@ -9,8 +9,9 @@ import {
     DebugInstructions,
     ReloadInstructions,
   } from 'react-native/Libraries/NewAppScreen';
-import FindServers from '../../tasks/FindServers';
-  
+import FindServers from '../../services/FindServers';
+import TokenManager from '../../Database/TokenManager';
+
 
 class Loading extends Component {
 
@@ -34,26 +35,24 @@ class Loading extends Component {
     });
     }, 3000);
 
-    const response_data = {
-      isServers: false
-    };
+    //find token
+    const tm = new TokenManager();
+    await tm.initDB();
+    const token = await tm.GET_TOKEN_BY_ID(1).then(async (val) => {
+      return await val;
+    });
 
     //check if tocken exist already
-    if(await AsyncStorage.getItem('token') != null && await AsyncStorage.getItem('token') != ""){
-      // console.log('smt', await AsyncStorage.getItem('token'));
+    if(token != null){
       this.props.navigation.navigate('download');
       return;
     }
 
     const server = new FindServers();
     const res = await server.getAllServerUrls().then(async (val) => {
-      // console.log('servers 2 : ');
-      // console.log(val);
       return val;
     });
 
-    // console.log('servers 3 : ');
-    // console.log(res);
 
     if(res == true){
       setTimeout(() => {

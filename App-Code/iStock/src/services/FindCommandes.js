@@ -10,12 +10,12 @@ class FindCommandes extends Component {
   }
 
 
-  async getAllOrderssFromServer(token){
+  async getAllOrdersFromServer(token){
     const orderManager = new OrderManager();
     await orderManager.initDB();
     await orderManager.CREATE_ORDER_TABLE();
 
-    console.log('orderManager', 'getAllOrderssFromServer()');
+    console.log('orderManager', 'getAllOrdersFromServer()');
     console.log('token', token);
     
     let i_ = 0;

@@ -15,16 +15,16 @@ const DATABASE_SIZE = DatabaseInfo.DATABASE_SIZE;
 
 const TABLE_NAME = "token";
 const COLUMN_ID = "id";
-const COLUMN_NAME = "token";
-const COLUMN_URL = "server";
-const COLUMN_USER = "user";
+const COLUMN_NAME = "name";
+const COLUMN_SERVER = "server";
+const COLUMN_TOKEN = "token";
 const COLUMN_COMPANY = "company";
 
 const create = "CREATE TABLE IF NOT EXISTS " + TABLE_NAME + "(" +
     COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
     COLUMN_NAME + " VARCHAR(255)," +
-    COLUMN_URL + " VARCHAR(255)," +
-    COLUMN_USER + " VARCHAR(255)," +
+    COLUMN_SERVER + " VARCHAR(255)," +
+    COLUMN_TOKEN + " VARCHAR(255)," +
     COLUMN_COMPANY + " VARCHAR(255)" +
 ")";
 
@@ -103,7 +103,7 @@ class TokenManager extends Component {
         return await new Promise(async (resolve) => {
             try{
                 await db.transaction(async (tx) => {
-                    await tx.executeSql("INSERT INTO " + TABLE_NAME + " ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_URL+", "+COLUMN_USER+", "+COLUMN_COMPANY+") VALUES (1, "+data_.name+", "+data_.url+", "+data_.user+", "+data_.company+")", []);
+                    await tx.executeSql("INSERT INTO " + TABLE_NAME + " ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_SERVER+", "+COLUMN_TOKEN+", "+COLUMN_COMPANY+") VALUES (1, '"+data_.name.replace(/'/g, "''")+"', '"+data_.server.replace(/'/g, "''")+"', '"+data_.token.replace(/'/g, "''")+"', '"+data_.company.replace(/'/g, "''")+"')", []);
                 });
                 return await resolve(true);
             } catch(error){
@@ -119,18 +119,18 @@ class TokenManager extends Component {
         return await new Promise(async (resolve) => {
             let token = {};
             await db.transaction(async (tx) => {
-                await tx.executeSql("SELECT t."+COLUMN_ID+", t."+COLUMN_NAME+", t."+COLUMN_URL+", t."+COLUMN_USER+", t."+COLUMN_COMPANY+ " FROM "+TABLE_NAME+" t WHERE t."+COLUMN_ID+" = "+id, []).then(async ([tx,results]) => {
+                await tx.executeSql("SELECT t."+COLUMN_ID+", t."+COLUMN_NAME+", t."+COLUMN_SERVER+", t."+COLUMN_TOKEN+", t."+COLUMN_COMPANY+ " FROM "+TABLE_NAME+" t WHERE t."+COLUMN_ID+" = "+id, []).then(async ([tx,results]) => {
                     console.log("Query completed");
                     var len = results.rows.length;
                     for (let i = 0; i < len; i++) {
                         let row = results.rows.item(i);
                         console.log('token => row: ', row);
 
-                        const {name, url, user, company} = row;
+                        const {name, server, token, company} = row;
                         token = {
                             name: name, 
-                            url: url, 
-                            user: user, 
+                            server: server, 
+                            token: token, 
                             company: company
                         };
                     }
@@ -138,6 +138,7 @@ class TokenManager extends Component {
                 });
                 await resolve(token);
             }).then(async (result) => {
+                console.log('result: ', result);
                 // await this.closeDatabase(db);
             }).catch(async (err) => {
                 console.log(err);

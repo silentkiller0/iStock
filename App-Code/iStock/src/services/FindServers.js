@@ -25,7 +25,7 @@ class FindServers extends Component {
                 console.log('Status == 200');
 
                 const filtered_data = [];
-                console.log("Data : ", response.data);
+                //console.log("Data : ", response.data);
                 
                 for(let x=0; x < response.data.length; x++){
                     filtered_data[x] = {name: response.data[x].name, url: response.data[x].url};
@@ -35,6 +35,7 @@ class FindServers extends Component {
 
                 //Sava data in db
                 const sm = new ServerManager();
+                await sm.initDB();
                 const res_1 = await sm.CREATE_SERVER_TABLE();
                 const res_2 = await sm.INSERT_SERVER_L(filtered_data);
 

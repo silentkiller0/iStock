@@ -145,7 +145,7 @@ class OrderManager extends Component {
         });
     }
 
-    GET_ORDER_BY_ID(id){
+    async GET_ORDER_BY_ID(id){
         console.log("##### GET_ORDER_BY_ID #########################");
 
         return await new Promise(async (resolve) => {

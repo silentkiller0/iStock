@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {StyleSheet, View, Text, ImageBackground, Image, StatusBar, AsyncStorage} from  'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import MyFooter from '../footers/Footer';
-import FindCommandes from '../../tasks/FindCommandes';
+import FindCommandes from '../../services/FindCommandes';
+import TokenManager from '../../Database/TokenManager';
   
 
 class Download extends Component {
@@ -16,21 +17,24 @@ class Download extends Component {
   
   async componentDidMount() {
 
-    //find the selected company
-    const token_ = await AsyncStorage.getItem('token');
-    const token = JSON.parse(token_);
-    console.log('token : ', token.token);
+    //find token
+    const tm = new TokenManager();
+    await tm.initDB();
+    const token = await tm.GET_TOKEN_BY_ID(1).then(async (val) => {
+      console.log('token : ', token);
+      return await val;
+    });
     
     setTimeout(() => {
       this.setState({
         ...this.state,
-        loadingNotify: 'Téléchargement des Commandes associer à ' + token.userName + '...'
+        loadingNotify: 'Téléchargement des Commandes associer à ' + token.name + '...'
     });
     }, 3000);
 
     const findCommandes = new FindCommandes();
-    const res = await findCommandes.getAllCommandesFromServer(token).then(async (val) => {
-      console.log('findCommandes.getAllCommandesFromServer : ');
+    const res = await findCommandes.getAllOrdersFromServer(token).then(async (val) => {
+      console.log('findCommandes.getAllOrdersFromServer : ');
       console.log(val);
       return val;
     });

@@ -3,6 +3,9 @@ import React, { Component } from 'react';
 import axios from 'axios';
 import { View, Text, StyleSheet, Platform, AsyncStorage } from 'react-native';
 import DeviceInfo from 'react-native-device-info';
+import ServerManager from '../Database/ServerManager';
+import TokenManager from '../Database/TokenManager';
+import { Value } from 'react-native-reanimated';
 
 // create a component
 class UserServices extends Component {
@@ -16,13 +19,16 @@ class UserServices extends Component {
         console.log(account);
 
         //find the selected company
-        const servers_ = await AsyncStorage.getItem('server_list');
-        console.log('server_list : ', servers_);
+        const sm = new ServerManager();
+        await sm.initDB();
+        const servers = await sm.GET_SERVER_LIST().then(async (val) => {
+            return await val;
+        });
+        console.log('server_list : ', servers);
 
-        const server = JSON.parse(servers_);
-        for(let i = 0; i < server.length; i++){
-            if(account.entreprise == server[i].name){
-                account.serverUrl = server[i].url;
+        for(let i = 0; i < servers.length; i++){
+            if(account.entreprise == servers[i].name){
+                account.serverUrl = servers[i].url;
                 break;
             }
         }
@@ -56,13 +62,16 @@ class UserServices extends Component {
 
                         //navigate to download
                         const token_ = {
-                            userName: response.data.success.identifiant,
+                            name: response.data.success.identifiant,
                             server: account.serverUrl,
-                            token: account.key
+                            token: account.key,
+                            company: account.entreprise
                         };
-                        await AsyncStorage.setItem('token', JSON.stringify(token_));
-                        //const token__ = await AsyncStorage.getItem('token');
-                        console.log('token_ : ', token_);
+
+                        const tm = new TokenManager();
+                        await tm.initDB();
+                        const res = await tm.CREATE_TOKEN_TABLE();
+                        const res_ = await tm.INSERT_TOKEN(token_);
 
                         await resolve(true);
                     }else{
@@ -100,75 +109,66 @@ class UserServices extends Component {
         console.log('SigningIn');
         console.log(account);
 
-        //check if the user have an account in dolibar first
-        /*
-        {
-            method: 'POST',
-            url: `${account.server}/api/index.php/istockapi/login?login=${account.identifiant}&password=${account.password}`,
-            headers: { 'DOLAPIKEY': account.key, 'Accept': 'application/json' }
-        }
-        */
-
         axios.post(`${account.server}/api/index.php/istockapi/login`,
-                    {
-                        login: account.identifiant,
-                        password: account.password
-                    },
+            {
+                login: account.identifiant,
+                password: account.password
+            },
+            { headers: { 'DOLAPIKEY': account.key, 'Accept': 'application/json' } })
+        .then(function (response) {
+
+            if(response.status){
+
+                let deviceOS = "";
+                if (Platform.OS === 'android') {
+                    deviceOS = "Android";
+                }
+                if (Platform.OS === 'ios') {
+                    deviceOS = "IOS";
+                }
+
+                console.log('user_data :');
+                const user_data = {
+                    rowid: "NULL",
+                    date_creation: Math.floor(Date.now() / 1000),
+                    identifiant: account.identifiant,
+                    last_connexion: Math.floor(Date.now() / 1000),
+                    device_platform: deviceOS,
+                    device_type: (DeviceInfo.isTablet() ? "Tablette" : "Téléphone"),
+                    fk_user: parseInt("" + response.data.success.id)
+                };
+                console.log(user_data);
+
+                axios.post(`${account.server}/api/index.php/istockapi/authentifications/create`, 
+                    user_data, 
                     { headers: { 'DOLAPIKEY': account.key, 'Accept': 'application/json' } })
                 .then(function (response) {
+                    if(response.status == 200){
+                        console.log('Status == 200');
+                        console.log(response.data);
 
-                    if(response.status){
-
-                        let deviceOS = "";
-                        if (Platform.OS === 'android') {
-                            deviceOS = "Android";
-                        }
-                        if (Platform.OS === 'ios') {
-                            deviceOS = "IOS";
-                        }
-
-                        console.log('user_data :');
-                        const user_data = {
-                            rowid: "NULL",
-                            date_creation: Math.floor(Date.now() / 1000),
-                            identifiant: account.identifiant,
-                            last_connexion: Math.floor(Date.now() / 1000),
-                            device_platform: deviceOS,
-                            device_type: (DeviceInfo.isTablet() ? "Tablette" : "Téléphone"),
-                            fk_user: parseInt("" + response.data.success.id)
-                        };
-                        console.log(user_data);
-
-                        axios.post(`${account.server}/api/index.php/istockapi/authentifications/create`, 
-                                    user_data, 
-                                    { headers: { 'DOLAPIKEY': account.key, 'Accept': 'application/json' } })
-                                .then(function (response) {
-                                    if(response.status == 200){
-                                        console.log('Status == 200');
-                                        console.log(response.data);
-
-                                        //navigate to connexion screen
-                                        this.props.navigation.navigate('login')
-                                    }else{
-                                        console.log('Status != 200');
-                                        console.log(response.data);
-                                    }
-                                }).catch(function (error) {
-                                    // handle error
-                                    console.log('error 2 : ');
-                                    console.log(error);
-                                    console.log( error.response.request._response);
-                                });
+                        //navigate to connexion screen
+                        this.props.navigation.navigate('login')
+                    }else{
+                        console.log('Status != 200');
+                        console.log(response.data);
                     }
-                })
-                .catch(function (error) {
+                }).catch(function (error) {
                     // handle error
-                    isUser = false;
-                    console.log('error 1 : ');
-                    console.log( error);
+                    console.log('error 2 : ');
+                    console.log(error);
                     console.log( error.response.request._response);
-                    alert("Vous n'avez pas de compte sur " + account.server);
                 });
+            }
+        })
+        .catch(function (error) {
+            // handle error
+            isUser = false;
+            console.log('error 1 : ');
+            console.log( error);
+            console.log( error.response.request._response);
+            alert("Vous n'avez pas de compte sur " + account.server);
+        });
     }
 
 }

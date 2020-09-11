@@ -100,6 +100,7 @@ class ServerManager extends Component {
         return await new Promise(async (resolve) => {
             try{
                 for(let x = 0; x < data_.length; x++){
+                    console.log("INSERT INTO " + TABLE_NAME + " ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_URL+") VALUES (NULL, '"+data_[x].name+"', '"+data_[x].url+"')");
                     await db.transaction(async (tx) => {
                         await tx.executeSql("INSERT INTO " + TABLE_NAME + " ("+COLUMN_ID+", "+COLUMN_NAME+", "+COLUMN_URL+") VALUES (NULL, '"+data_[x].name+"', '"+data_[x].url+"')", []);
                     });
