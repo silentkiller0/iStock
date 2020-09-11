@@ -29,7 +29,7 @@ class FindCommandes extends Component {
         .then(async (response) => {
             if(response.status == 200){
                 console.log('Status == 200');
-                console.log(response.data);
+                //console.log(response.data);
 
                 const res = await orderManager.INSERT_(response.data);
                 if(res){

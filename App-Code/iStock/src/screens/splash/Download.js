@@ -21,23 +21,33 @@ class Download extends Component {
     const tm = new TokenManager();
     await tm.initDB();
     const token = await tm.GET_TOKEN_BY_ID(1).then(async (val) => {
-      console.log('token : ', token);
       return await val;
     });
+    console.log('token : ', token);
+
+    if(token == null){
+      this.setState({
+        ...this.state,
+        loadingNotify: 'Token Error.'
+      });
+      return;
+    }
     
     setTimeout(() => {
       this.setState({
         ...this.state,
         loadingNotify: 'Téléchargement des Commandes associer à ' + token.name + '...'
-    });
+      });
     }, 3000);
 
+    /*
     const findCommandes = new FindCommandes();
     const res = await findCommandes.getAllOrdersFromServer(token).then(async (val) => {
       console.log('findCommandes.getAllOrdersFromServer : ');
       console.log(val);
       return val;
     });
+    */
 
     /*
     const server = new Servers();
@@ -49,7 +59,7 @@ class Download extends Component {
       alert("Le serveur Big Data Consulting n'est pas joignable...\n");
     }
     */
-
+   const res = true;
    if(res == true){
       setTimeout(() => {
         this.props.navigation.navigate('dashboard');
