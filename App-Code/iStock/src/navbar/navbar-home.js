@@ -9,8 +9,9 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import DeviceInfo from 'react-native-device-info';
 import Icon from 'react-native-vector-icons/FontAwesome5';
+const IMG_SRC = require('../../img/banner.png');
 
-export default class NavbarDashboard extends Component {
+export default class NavbarHome extends Component {
   constructor(props) {
     super(props);
 
@@ -86,19 +87,35 @@ export default class NavbarDashboard extends Component {
 
     const styles = StyleSheet.create({
       body: {
-        //padding: 10,
-        height: "10%",
-        width: "100%",
-        flexDirection: 'row',
+
+        // backgroundColor: 'black'
+
+        height: 250,
+        width: '100%',
+        //flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+
+      },
+      backdrop: {
+        flex: 1,
+        width: '100%'
+      },
+      layout: {
+        // flex: 1,
+        padding: 10,
+        height: this.state.orientation === "portrait" ? "40%" : "50%",
+        // width: "30%",
+        justifyContent: "center",
+        alignItems: "center",
         // backgroundColor: 'black'
       },
-
       text: {
         flex: 1,
-        marginTop: 10,
-        color: '#ffffff',
-        fontWeight: 'bold',
-        fontSize: 25,
+        color: "#fff",
+        fontSize: 20,
+        fontWeight: "bold",
+        marginTop: 20
       },
       icon1: {
         color: '#ffffff',
@@ -119,12 +136,10 @@ export default class NavbarDashboard extends Component {
 
     return (
       <View style={styles.body}>
+        <Image source={IMG_SRC} resizeMode='cover' style={styles.backdrop} />
 
-
-        <View style={{ flex: 1, width: "100%", justifyContent: "center", alignItems: "center", }}>
-          <Text style={styles.text}>{this.props.textTittleValue}</Text>
-        </View>
-
+        <Icon name="power-off" size={25} style={styles.icon1} onPress={() => disconnect()} />
+        <Icon name="headset" size={25} style={styles.icon2} />
 
 
 
