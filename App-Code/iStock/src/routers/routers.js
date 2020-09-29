@@ -13,9 +13,10 @@ import CommandeDetails from '../screens/dashbord-screens/CommandeDetails';
 import Preparation from '../screens/dashbord-screens/Preparation';
 import Inventory from '../screens/dashbord-screens/Inventory';
 import Settings from '../screens/dashbord-screens/Settings';
-import ProductDetails from '../screens/dashbord-screens/ProductDetails'
+import ProductDetails from '../screens/dashbord-screens/ProductDetails';
+import Support from '../screens/Support';
 
-import {DrawerContent} from '../screens/side-bar-custom/DrawerContent';
+import { DrawerContent } from '../screens/side-bar-custom/DrawerContent';
 
 
 class RouterNavigation extends Component {
@@ -35,6 +36,7 @@ class RouterNavigation extends Component {
           <Drawer.Screen name="Preparation" component={Preparation} />
           <Drawer.Screen name="Inventory" component={Inventory} />
           <Drawer.Screen name="Configuration" component={Settings} />
+          <Drawer.Screen name="Support" component={Support} />
         </Drawer.Navigator>
       );
     }
@@ -47,7 +49,7 @@ class RouterNavigation extends Component {
         login: Login,
         signIn: SignIn,
         download: Download,
-        dashboard: DrawerNavigation
+        dashboard: DrawerNavigation,
       },
       {
         initialRouteName: 'welcome',

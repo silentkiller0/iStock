@@ -9,7 +9,6 @@ import MyFooter from '../footers/Footer';
 import DeviceInfo, { isLandscape } from 'react-native-device-info';
 import MainButton from '../dashbord-screens/assets/MainButton';
 
-
 export default class Dashboard extends Component {
   constructor(props) {
     super(props);
@@ -71,6 +70,7 @@ export default class Dashboard extends Component {
       }
     });
 
+    const { navigate } = this.props.navigation;
 
     return (
       <LinearGradient
@@ -78,7 +78,7 @@ export default class Dashboard extends Component {
         colors={['#00AAFF', '#706FD3']}
         style={styles.container}>
 
-        <NavbarHome navigation={this.props} />
+        <NavbarHome title={navigate} />
         <View style={styles.mainBody}>
           <ScrollView style={{ flex: 1 }}>
 

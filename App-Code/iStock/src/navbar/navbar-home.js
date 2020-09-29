@@ -43,6 +43,12 @@ export default class NavbarHome extends Component {
     });
   }
 
+
+
+  support() {
+    this.props.title('Support');
+  }
+
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.existPressed);
   }
@@ -139,7 +145,7 @@ export default class NavbarHome extends Component {
         <Image source={IMG_SRC} resizeMode='cover' style={styles.backdrop} />
 
         <Icon name="power-off" size={25} style={styles.icon1} onPress={() => disconnect()} />
-        <Icon name="headset" size={25} style={styles.icon2} />
+        <Icon name="headset" size={25} style={styles.icon2} onPress={() => this.support()} />
 
 
 
